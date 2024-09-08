@@ -1,38 +1,33 @@
 package com.hibob.academy.resource
 
-import com.hibob.academy.restApi.Pets
-import jakarta.ws.rs.GET
-import jakarta.ws.rs.NotAllowedException
-import jakarta.ws.rs.Produces
+import com.hibob.rsetApiDataClasses.Pets
+
 import jakarta.ws.rs.core.Response
 import org.springframework.stereotype.Controller
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.*
 
-
-import org.springframework.web.client.RestTemplate
-
 @Controller
 @Path("/api/pets")
 @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 class PetsResource {
 
     @GET
     fun getPetType(): Response {
-        return Response.ok().build()
+        return Response.ok("ok").build()
     }
 
     @POST
-    @Path("/{id}")
-    fun postPet(@PathParam("id") id: Long): Response {
-        return Response.status(Response.Status.CREATED).build()
+    fun postPet( id: Long): Response {
+        return Response.ok("posted").build()
 
     }
 
     @PUT
     @Path("/{id}")
     fun putPet(@PathParam("id") id: Long): Response {
-        return Response.ok("Posted").build()
+        return Response.ok("Path").build()
 
     }
 
