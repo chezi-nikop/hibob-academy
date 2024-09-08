@@ -10,6 +10,7 @@ import jakarta.ws.rs.PathParam
 import jakarta.ws.rs.Produces
 import org.springframework.stereotype.Controller
 import jakarta.ws.rs.core.Response
+import com.hibob.rsetApiDataClasses.Owner
 
 @Controller
 @Path("/api/owners")
@@ -19,28 +20,25 @@ class OwnerResource {
 
     @Path("/{ownerId}")
     @GET
-    fun getOwner(@PathParam("ownerId") ownerId: String): Response {
+    fun getOwner(@PathParam("ownerId") ownerId: Int): Response {
         return Response.ok(ownerId).build()
     }
 
     @Path("/{ownerId}")
     @POST
-    fun postOwner(@PathParam("ownerId") ownerId: String,):Response {
+    fun postOwner(@PathParam("ownerId") ownerId: Int):Response {
         return Response.ok(ownerId).build()
     }
 
     @Path("/{ownerId}")
     @PUT
-    fun putOwner(@PathParam("ownerId") ownerId: String,):Response {
+    fun putOwner(@PathParam("ownerId") ownerId: Int):Response {
         return Response.ok(ownerId).build()
     }
 
     @Path("/{ownerId}")
     @DELETE
-    fun deleteOwner(@PathParam("ownerId") ownerId: String): Response {
+    fun deleteOwner(@PathParam("ownerId") ownerId: Int): Response {
         return Response.ok(ownerId).build()
     }
-
-
-
 }
