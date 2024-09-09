@@ -1,15 +1,8 @@
 package com.hibob.academy.resource
 
-import com.hibob.academy.dao.Example
-import com.hibob.academy.service.ExampleService
 import com.hibob.academy.service.SessionService
 import jakarta.ws.rs.Path
-import org.springframework.stereotype.Component
-import jakarta.ws.rs.core.Response
-import org.springframework.web.bind.annotation.PostMapping
-import io.jsonwebtoken.Jwts
 import org.springframework.stereotype.Controller
-import java.awt.PageAttributes
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.Consumes
