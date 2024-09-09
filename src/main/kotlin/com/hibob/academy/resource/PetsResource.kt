@@ -48,8 +48,8 @@ class PetsResource {
     }
 
     @DELETE
-    @Path("/{petId}")
-    fun deletePet(@PathParam("petId") petId: Long): Response {
+    @Path("/{PetId}")
+    fun deletePet(@PathParam("PetId") petId: Int): Response {
         val index = allPets.indexOfFirst { p -> p.id == petId }
         if (index >= 0) {
             allPets.removeAt(index)

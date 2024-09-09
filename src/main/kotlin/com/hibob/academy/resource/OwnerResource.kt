@@ -2,6 +2,13 @@ package com.hibob.academy.resource
 
 import com.hibob.rsetApiDataClasses.Owner
 import jakarta.ws.rs.*
+import  jakarta.ws.rs.DELETE
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.POST
+import jakarta.ws.rs.PUT
+import jakarta.ws.rs.Path
+import jakarta.ws.rs.PathParam
+import jakarta.ws.rs.Produces
 import org.springframework.stereotype.Controller
 import jakarta.ws.rs.core.Response
 import jakarta.ws.rs.core.MediaType
@@ -44,7 +51,7 @@ class OwnerResource {
     }
 
     @DELETE
-    @Path("/{ownerId}")
+   @Path("/{ownerId}")
     fun deleteOwner(@PathParam("ownerId") ownerId: Long): Response {
         val index = allOwner.indexOfFirst { it.id == ownerId }
         if (index >= 0) {
