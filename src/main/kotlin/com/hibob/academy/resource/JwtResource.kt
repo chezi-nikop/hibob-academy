@@ -7,6 +7,11 @@ import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.POST
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.core.NewCookie
+import jakarta.ws.rs.core.Response
+
+
 
 
 data class User(val email: String, val userName: String, val isAdmin: Boolean)
@@ -20,12 +25,16 @@ class JwtResource(private val sessionService: SessionService) {
     @Path("/Login")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    fun addUser(user: User): String {
-       // val sessionService = SessionService()
+    fun addUser(user: User): Response {
+        val tokenJwt = sessionService.createJwtToken(user) // Assuming createJWTToken returns a JWT
+        val cookie = NewCookie.Builder("chezi_cookie_name").value(tokenJwt).build() //Creating new cookie
+        return Response.ok().cookie(cookie).build()
+    }
 
-        //val jwtToken = sessionService.createJwtToken(user)
-
-        //return Response.status(Response.Status.CREATED).entity(jwtToken).build()
-        return sessionService.createJwtToken(user)
+    @GET
+    @Path("/getUser")
+    @Consumes(MediaType.APPLICATION_JSON)
+    fun getUser(): Response {
+        return Response.ok().entity("ok").build()
     }
 }

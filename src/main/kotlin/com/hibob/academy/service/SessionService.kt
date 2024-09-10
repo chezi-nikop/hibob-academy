@@ -4,6 +4,8 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import java.util.Date
 import com.hibob.academy.resource.User
+import io.jsonwebtoken.Claims
+import io.jsonwebtoken.Jws
 import io.jsonwebtoken.security.Keys
 import org.springframework.stereotype.Component
 
@@ -23,4 +25,14 @@ class SessionService {
             .signWith(Keys.hmacShaKeyFor(secretKey.toByteArray()),SignatureAlgorithm.HS512)
             .compact()
     }
+
+ /*   fun validateJwtToken(token: String): Jws<Claims>? {
+        return try {
+            Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.toByteArray()))
+                .build()
+                .parseClaimsJwt(token)
+        } catch (e: Exception) {}
+        null
+    }*/
 }
