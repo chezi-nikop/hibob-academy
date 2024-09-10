@@ -1,6 +1,6 @@
 package com.hibob.academy.resource
 
-import com.hibob.rsetApiDataClasses.Pets
+import com.hibob.rsetApiDataClasses.Pet
 
 import jakarta.ws.rs.core.Response
 import org.springframework.stereotype.Controller
@@ -15,19 +15,19 @@ import java.time.LocalDateTime
 
 class PetsResource {
 
-    private val allPets: MutableList<Pets> = mutableListOf()
+    private val allPets: MutableList<Pet> = mutableListOf()
 
     @GET
     @Path("/{petId}")
-    fun getPetId(@PathParam("petId") petId: Long): Response {
-        val pet = allPets.find { p -> p.id == petId.toInt() }
+    fun getPetById(@PathParam("petId") petId: Long): Response {
+        val pet = allPets.find { p -> p.id == petId }
         pet?.let {
             return Response.ok(pet).build()
         } ?: return Response.status(Response.Status.NOT_FOUND).entity("Pet not found").build()
     }
 
     @POST
-    fun postPet(pet: Pets): Response {
+    fun postPet(pet: Pet): Response {
         val newPetId = (allPets.maxByOrNull { p -> p.id }?.id ?: 0) + 1
 
         allPets.add(pet.copy(id = newPetId, dateOfArrival = LocalDateTime.now()))
@@ -37,7 +37,7 @@ class PetsResource {
 
     @PUT
     @Path("/{petId}")
-    fun putPet(@PathParam("petId") petId: Int ,updateUet: Pets): Response {
+    fun putPet(@PathParam("petId") petId: Long ,updateUet: Pet): Response {
         val index = allPets.indexOfFirst { p -> p.id == petId }
         if (index >= 0) {
             val petToUpdate = allPets.removeAt(index).copy(id =updateUet.id, dateOfArrival = LocalDateTime.now())
@@ -49,7 +49,7 @@ class PetsResource {
 
     @DELETE
     @Path("/{PetId}")
-    fun deletePet(@PathParam("PetId") pet: Pets): Response {
+    fun deletePet(@PathParam("PetId") pet: Pet): Response {
         val index = allPets.indexOfFirst { p -> p.id == pet.id }
         if (index >= 0) {
             allPets.removeAt(index)
