@@ -32,3 +32,8 @@ fun typeEnumToString(type: PetType): String {
         PetType.CAT -> "CAT"
     }
 }
+
+enum class PetType {
+    DOG,
+    CAT;
+}
