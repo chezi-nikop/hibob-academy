@@ -59,8 +59,4 @@ class OwnerDao(private val sql: DSLContext) {
             .where(owner.ownerId.equal(id))
             .fetchOneInto(OwnerData::class.java)
     }
-
-
-
-
 }
