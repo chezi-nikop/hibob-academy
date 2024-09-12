@@ -18,12 +18,12 @@ data class User(val email: String, val userName: String, val isAdmin: Boolean)
 
 
 @Controller
-@Path("/users")
+@Produces(MediaType.APPLICATION_JSON)
+@Path("/jwt/users")
 class JwtResource(private val sessionService: SessionService) {
 
     @POST
-    @Path("/Login")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
     fun addUser(user: User): Response {
         val tokenJwt = sessionService.createJwtToken(user) // Assuming createJWTToken returns a JWT

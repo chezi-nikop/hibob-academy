@@ -4,16 +4,13 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import java.util.Date
 import com.hibob.academy.resource.User
-import io.jsonwebtoken.Claims
-import io.jsonwebtoken.Jws
-import io.jsonwebtoken.security.Keys
-import org.springframework.stereotype.Component
 
+import org.springframework.stereotype.Component
 
 @Component
 class SessionService {
     companion object {
-        val secretKey = "secjgfthgfth67ythgf657rtythfggfdfgdfasjdhsajfh3243hgasfssdfdfsdesrytftyr657ret"
+        const val SECRET_KEY = "secjgfthgfth67ythgf657rtythfggfdfgdfasjdhsuytuytuyuttuuuutuytyuajfh3243hgasfssdfdfsdesrytftyr657ret"
     }
     val now = Date()
     fun createJwtToken(user: User): String {
@@ -22,17 +19,7 @@ class SessionService {
             .claim("username", user.userName)
             .claim("isAdmin", user.isAdmin)
             .setExpiration(Date(now.time + 60 * 60 * 24))
-            .signWith(Keys.hmacShaKeyFor(secretKey.toByteArray()),SignatureAlgorithm.HS512)
+            .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
             .compact()
     }
-
- /*   fun validateJwtToken(token: String): Jws<Claims>? {
-        return try {
-            Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.toByteArray()))
-                .build()
-                .parseClaimsJwt(token)
-        } catch (e: Exception) {}
-        null
-    }*/
 }
