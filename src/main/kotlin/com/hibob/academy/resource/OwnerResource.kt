@@ -15,7 +15,6 @@ import org.springframework.stereotype.Controller
 import jakarta.ws.rs.core.Response
 import jakarta.ws.rs.core.MediaType
 
-gi
 @Controller
 @Path("/api/owners")
 @Produces(MediaType.APPLICATION_JSON)
@@ -34,6 +33,9 @@ class OwnerResource {
 
     @POST
     fun creatOwner(owner: Owner): Response {
+        if (owner.firstName == null && owner.lastName == null && owner.name == null) {
+            return Response.status(Response.Status.FORBIDDEN).entity("Name is required").build()
+        }
         val newOwnerId = (allOwner.maxByOrNull { o -> o.id }?.id ?: 0) + 1
 
         allOwner.add(owner.copy(id = newOwnerId))
