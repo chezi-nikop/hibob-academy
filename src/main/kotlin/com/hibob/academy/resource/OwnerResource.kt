@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller
 import jakarta.ws.rs.core.Response
 import jakarta.ws.rs.core.MediaType
 
-
 @Controller
 @Path("/api/owners")
 @Produces(MediaType.APPLICATION_JSON)
