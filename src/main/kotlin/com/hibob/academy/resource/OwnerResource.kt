@@ -51,7 +51,7 @@ class OwnerResource {
     }
 
     @DELETE
-   @Path("/{ownerId}")
+    @Path("/{ownerId}")
     fun deleteOwner(@PathParam("ownerId") ownerId: Long): Response {
         val index = allOwner.indexOfFirst { it.id == ownerId }
         if (index >= 0) {
