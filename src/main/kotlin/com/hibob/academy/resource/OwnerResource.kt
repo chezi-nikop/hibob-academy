@@ -22,7 +22,7 @@ class OwnerResource {
 
     @GET
     fun getOwner(@PathParam("ownerId") ownerId: Long): Response {
-        val owner = owners.find { it.id.toLong() == ownerId }
+        val owner = owners.find { it.id == ownerId }
         return if (owner != null) {
             Response.ok(owner).build()
         } else {
