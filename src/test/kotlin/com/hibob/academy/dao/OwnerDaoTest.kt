@@ -26,8 +26,12 @@ class OwnerDaoTest @Autowired constructor(private val sql: DSLContext) {
         val newOwner1 = OwnerDataInsert( name, companyId, employeeId = "1")
         val newOwner2 = OwnerDataInsert( name, companyId, employeeId = "2")
 
-        ownerDao.createOwnerIfNotExists(newOwner1)
-        ownerDao.createOwnerIfNotExists(newOwner2)
+        val ownerId1 = ownerDao.createOwnerIfNotExists(newOwner1)
+        val ownerId2 = ownerDao.createOwnerIfNotExists(newOwner2)
+
+
+
+        val allOwners = ownerDao.getAllOwners(companyId)
 
         assertEquals(2, ownerDao.getAllOwners(companyId).size)
     }
@@ -88,7 +92,7 @@ class OwnerDaoTest @Autowired constructor(private val sql: DSLContext) {
         val insertOwner = ownerDao.getAllOwners(companyId)[0]
 
         val petDao = PetsDao(sql)
-        val petTest = PetDataInsert(insertOwner.ownerId , name = "A", type = getType(PetType.DOG) , companyId)
+        val petTest = PetDataInsert(insertOwner.ownerId , name = "A", PetType.DOG , companyId)
         val newPetId = petDao.createPet(petTest)
 
         val checkOwnerTest = ownerDao.getOwnerByPetId(newPetId, companyId)
@@ -109,7 +113,7 @@ class OwnerDaoTest @Autowired constructor(private val sql: DSLContext) {
     @Test
     fun `try to get owner by petId when no owner exists in the database`() {
         val petDao = PetsDao(sql)
-        val petTest = PetDataInsert(null , name = "A", type = getType(PetType.DOG) , companyId)
+        val petTest = PetDataInsert(null , name = "A", PetType.DOG , companyId)
         val newPetId = petDao.createPet(petTest)
 
         val ownerFromPetId = ownerDao.getOwnerByPetId(newPetId, companyId)

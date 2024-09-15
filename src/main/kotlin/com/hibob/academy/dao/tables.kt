@@ -1,6 +1,7 @@
 package com.hibob.academy.dao
 
 import com.hibob.academy.utils.JooqTable
+import org.glassfish.hk2.classmodel.reflect.EnumType
 
 class PetsTable(tableName: String = "pets") : JooqTable(tableName) {
     val petId = createBigIntField("id")
@@ -26,14 +27,10 @@ class OwnerTable(tableName: String = "owner") : JooqTable(tableName) {
     }
 }
 
-enum class PetType {
-    DOG,
-    CAT;
-}
-
-fun getType(type: PetType): String {
+fun typeEnumToString(type: PetType): String {
     return when (type) {
         PetType.DOG -> "DOG"
         PetType.CAT -> "CAT"
     }
 }
+
