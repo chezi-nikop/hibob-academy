@@ -1,5 +1,6 @@
 package com.hibob.academy.resource
 
+import com.hibob.rsetApiDataClasses.Owner
 import  jakarta.ws.rs.DELETE
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.POST
