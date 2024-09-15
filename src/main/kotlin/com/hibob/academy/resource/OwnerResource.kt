@@ -17,15 +17,6 @@ class OwnerResource {
     private val allOwner: MutableList<Owner> = mutableListOf()
 
     @GET
-    fun getOwner(@PathParam("ownerId") ownerId: Long): Response {
-        val owner = owners.find { it.id == ownerId }
-        return if (owner != null) {
-            Response.ok(owner).build()
-        } else {
-            Response.status(Response.Status.NOT_FOUND).build()
-        }
-    }
-
     @Path("/{ownerId}")
     fun getOwnerById(@PathParam("ownerId") ownerId: Long): Response {
         val owner = allOwner.find { it.id == ownerId }
@@ -35,10 +26,6 @@ class OwnerResource {
     }
 
     @POST
-    fun postOwner(@PathParam("ownerId") ownerId: Long):Response {
-        return Response.ok(ownerId).build()
-    }
-
     fun creatOwner(owner: Owner): Response {
         val newOwnerId = (allOwner.maxByOrNull { o -> o.id }?.id ?: 0) + 1
 
@@ -48,10 +35,6 @@ class OwnerResource {
     }
 
     @PUT
-    fun putOwner(@PathParam("ownerId") ownerId: Long):Response {
-        return Response.ok(ownerId).build()
-    }
-
     @Path("/{ownerId}")
     fun updateOwner(@PathParam("ownerId") ownerId: Long ,updateOwner: Owner): Response {
         val index = allOwner.indexOfFirst { it.id == ownerId }
