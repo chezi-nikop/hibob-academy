@@ -27,17 +27,17 @@ class PetsResource {
     }
 
     @POST
-    fun postPet(pet: Pet): Response {
+    fun creatPet(pet: Pet): Response {
         val newPetId = (allPets.maxByOrNull { p -> p.id }?.id ?: 0) + 1
 
         allPets.add(pet.copy(id = newPetId, dateOfArrival = LocalDate.now()))
 
-        return Response.status(Response.Status.CREATED).entity(Response.Status.CREATED).build()
+        return Response.status(Response.Status.CREATED).entity(allPets).build()
     }
 
     @PUT
     @Path("/{petId}")
-    fun putPet(@PathParam("petId") petId: Long ,updatePet: Pet): Response {
+    fun updatePet(@PathParam("petId") petId: Long ,updatePet: Pet): Response {
         val index = allPets.indexOfFirst { p -> p.id == petId }
         if (index >= 0) {
             val petToUpdate = allPets.removeAt(index).copy(id =updatePet.id, dateOfArrival = LocalDate.now())
@@ -48,8 +48,8 @@ class PetsResource {
     }
 
     @DELETE
-    @Path("/{PetId}")
-    fun deletePet(@PathParam("PetId") petId: Long): Response {
+    @Path("/{petId}")
+    fun deletePet(@PathParam("petId") petId: Long): Response {
         val index = allPets.indexOfFirst { p -> p.id == petId }
         if (index >= 0) {
             allPets.removeAt(index)
