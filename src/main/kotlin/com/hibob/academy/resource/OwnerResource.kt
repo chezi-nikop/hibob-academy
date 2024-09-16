@@ -2,10 +2,9 @@ package com.hibob.academy.resource
 
 import com.hibob.rsetApiDataClasses.Owner
 import jakarta.ws.rs.*
-import  jakarta.ws.rs.*
-import org.springframework.stereotype.Controller
-import jakarta.ws.rs.core.Response
 import jakarta.ws.rs.core.MediaType
+import jakarta.ws.rs.core.Response
+import org.springframework.stereotype.Controller
 
 @Controller
 @Path("/api/owners")
@@ -25,6 +24,9 @@ class OwnerResource {
 
     @POST
     fun creatOwner(owner: Owner): Response {
+        if (owner.firstName == null && owner.lastName == null && owner.name == null) {
+            return Response.status(Response.Status.FORBIDDEN).entity("Name is required").build()
+        }
         val newOwnerId = (allOwner.maxByOrNull { o -> o.id }?.id ?: 0) + 1
 
         allOwner.add(owner.copy(id = newOwnerId))
@@ -45,7 +47,7 @@ class OwnerResource {
     }
 
     @DELETE
-    @Path("/{ownerId}")
+   @Path("/{ownerId}")
     fun deleteOwner(@PathParam("ownerId") ownerId: Long): Response {
         val index = allOwner.indexOfFirst { it.id == ownerId }
         if (index >= 0) {

@@ -40,7 +40,7 @@ class PetsResource {
     fun updatePet(@PathParam("petId") petId: Long ,updatePet: Pet): Response {
         val index = allPets.indexOfFirst { p -> p.id == petId }
         if (index >= 0) {
-            val petToUpdate = allPets.removeAt(index).copy(id =updatePet.id, dateOfArrival = LocalDate.now())
+            val petToUpdate = allPets.removeAt(index).copy(id = updatePet.id, dateOfArrival = LocalDate.now())
             return Response.ok(petToUpdate).build()
         } else {
             return Response.status(Response.Status.NOT_FOUND).entity("Pet not found").build()
