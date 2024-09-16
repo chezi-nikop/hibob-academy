@@ -1,6 +1,7 @@
 package com.hibob.academy.service
 
-import com.hibob.academy.dao.*
+import com.hibob.academy.dao.Example
+import com.hibob.academy.dao.ExampleDao
 import org.springframework.stereotype.Component
 
 @Component
