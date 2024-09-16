@@ -67,15 +67,11 @@ class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
 
         val checkTest = PetData(newPetId, petTest.ownerId, petTest.name, petTest.type, petTest.companyId, petDao.getAllPetsByType(PetType.DOG, companyId)[0].dateOfArrival)
 
-        assertEquals(checkTest, returnTest)
-
+        assertTrue(checkTest.equals(returnTest))
     }
 
     @Test
     fun `return null wen we trying to get pet that does not exist in the database`() {
-        val petTest = PetDataInsert(ownerId, name = "A", PetType.DOG, companyId)
-        petDao.createPet(petTest)
-
         val newPetId = -1L
 
         assertNull(petDao.getPet(newPetId, companyId))
@@ -91,6 +87,7 @@ class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
         val checkTest = petDao.updatePetOwnerId(newPetId, newOwnerId, companyId)
 
         assertNull(checkTest)
+        assertTrue(petDao.getPet(newPetId, companyId)?.ownerId == ownerId)
     }
 
     @Test
@@ -100,8 +97,9 @@ class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
 
         val newOwnerId = 2L
 
-        petDao.updatePetOwnerId(newPetId, newOwnerId, companyId)
+        val checkTest = petDao.updatePetOwnerId(newPetId, newOwnerId, companyId)
 
-        assertEquals(petDao.getPet(newPetId, companyId)?.ownerId , newOwnerId)
+        assertNotNull(checkTest)
+        assertTrue(petDao.getPet(newPetId, companyId)?.ownerId == newOwnerId)
     }
 }

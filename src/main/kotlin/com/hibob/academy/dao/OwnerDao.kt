@@ -53,11 +53,4 @@ class OwnerDao(private val sql: DSLContext) {
             .and(petsTable.companyId.eq(companyId))
             .fetchOne(ownerMapper)
     }
-
-    fun getOwnerById(id: Long): OwnerData? {
-        return sql.select(owner.name, owner.companyId, owner.employeeId)
-            .from(owner)
-            .where(owner.ownerId.equal(id))
-            .fetchOneInto(OwnerData::class.java)
-    }
 }

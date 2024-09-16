@@ -13,7 +13,6 @@ class OwnerDaoTest @Autowired constructor(private val sql: DSLContext) {
     private val ownerDao = OwnerDao(sql)
     val tableOwner = OwnerTable.instance
     val companyId = 1L
-    val ownerId = 1L
     val name = "chezi"
 
     @AfterEach
@@ -23,22 +22,24 @@ class OwnerDaoTest @Autowired constructor(private val sql: DSLContext) {
 
     @Test
     fun `get all owners wen we got owners in the database`() {
-        val newOwner1 = OwnerDataInsert( name, companyId, employeeId = "1")
-        val newOwner2 = OwnerDataInsert( name, companyId, employeeId = "2")
+        val newOwner = OwnerDataInsert( name, companyId, employeeId = "1")
+        ownerDao.createOwnerIfNotExists(newOwner)
 
-        val ownerId1 = ownerDao.createOwnerIfNotExists(newOwner1)
-        val ownerId2 = ownerDao.createOwnerIfNotExists(newOwner2)
+        val ownerId = ownerDao.getAllOwners(companyId)[0].ownerId
 
-
+        val checkOwner = OwnerData(ownerId, name, companyId, employeeId = "1" )
 
         val allOwners = ownerDao.getAllOwners(companyId)
 
-        assertEquals(2, ownerDao.getAllOwners(companyId).size)
+        assertTrue(checkOwner in allOwners)
+        assertTrue(allOwners.size.equals(1))
     }
 
     @Test
     fun `get all owners wen we dont have owners in the database`() {
-        assertEquals(0, ownerDao.getAllOwners(ownerId).size)
+        val allOwners = ownerDao.getAllOwners(companyId)
+
+        assertTrue(allOwners.isEmpty())
     }
 
     @Test
@@ -46,9 +47,11 @@ class OwnerDaoTest @Autowired constructor(private val sql: DSLContext) {
         val newOwner = OwnerDataInsert(name, companyId, employeeId = "1")
         ownerDao.createOwnerIfNotExists(newOwner)
 
-        assertTrue(newOwner.name.equals(ownerDao.getAllOwners(companyId)[0].name))
-        assertTrue(newOwner.companyId.equals(ownerDao.getAllOwners(companyId)[0].companyId))
-        assertTrue(newOwner.employeeId.equals(ownerDao.getAllOwners(companyId)[0].employeeId))
+        val ownerId = ownerDao.getAllOwners(companyId)[0].ownerId
+
+        val checkOwner = OwnerData(ownerId, name, companyId, employeeId = "1")
+
+        assertTrue(checkOwner.equals(ownerDao.getAllOwners(companyId)[0]))
     }
 
     @Test
@@ -58,7 +61,15 @@ class OwnerDaoTest @Autowired constructor(private val sql: DSLContext) {
         ownerDao.createOwnerIfNotExists(newOwner)
         ownerDao.createOwnerIfNotExists(newOwner)
 
-        assertEquals(1, ownerDao.getAllOwners(companyId).size)
+        val ownerId = ownerDao.getAllOwners(companyId)[0].ownerId
+
+        val checkOwner = OwnerData(ownerId, name, companyId, employeeId = "1")
+        val ownerList = listOf(checkOwner)
+
+        val returnList = ownerDao.getAllOwners(companyId)
+
+        assertTrue(ownerList.containsAll(returnList))
+        assertTrue(returnList.size.equals(1))
     }
 
     @Test
@@ -67,11 +78,12 @@ class OwnerDaoTest @Autowired constructor(private val sql: DSLContext) {
 
         ownerDao.createOwnerIfNotExists(newOwner)
 
-        val newOwnerId = ownerDao.getAllOwners(companyId)[0].ownerId
+        val ownerId = ownerDao.getAllOwners(companyId)[0].ownerId
 
-        assertEquals(newOwner.name, ownerDao.getOwnerById(newOwnerId, companyId)?.name)
-        assertEquals(newOwner.companyId, ownerDao.getOwnerById(newOwnerId, companyId)?.companyId)
-        assertEquals(newOwner.employeeId, ownerDao.getOwnerById(newOwnerId, companyId)?.employeeId)
+        val checkOwner = OwnerData(ownerId, name, companyId, employeeId = "1")
+        val returnOwner = ownerDao.getOwnerById(ownerId, companyId)
+
+        assertTrue(checkOwner.equals(returnOwner))
     }
 
     @Test
@@ -89,18 +101,17 @@ class OwnerDaoTest @Autowired constructor(private val sql: DSLContext) {
         val ownerTest = OwnerDataInsert(name = "chezi", companyId, employeeId = "1")
         ownerDao.createOwnerIfNotExists(ownerTest)
 
-        val insertOwner = ownerDao.getAllOwners(companyId)[0]
+        val ownerId = ownerDao.getAllOwners(companyId)[0].ownerId
+
+        val checkOwner = OwnerData(ownerId, name, companyId, employeeId = "1")
 
         val petDao = PetsDao(sql)
-        val petTest = PetDataInsert(insertOwner.ownerId , name = "A", PetType.DOG , companyId)
+        val petTest = PetDataInsert(ownerId , name = "A", PetType.DOG , companyId)
         val newPetId = petDao.createPet(petTest)
 
         val checkOwnerTest = ownerDao.getOwnerByPetId(newPetId, companyId)
 
-        assertNotNull(checkOwnerTest)
-        assertEquals(insertOwner.name, checkOwnerTest?.name)
-        assertEquals(insertOwner.employeeId, checkOwnerTest?.employeeId)
-        assertEquals(insertOwner.companyId, checkOwnerTest?.companyId)
+        assertTrue(checkOwner.equals(checkOwnerTest))
     }
 
     @Test
