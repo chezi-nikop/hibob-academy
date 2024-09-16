@@ -2,6 +2,7 @@ package com.hibob.academy.resource
 
 import com.hibob.rsetApiDataClasses.Owner
 import jakarta.ws.rs.*
+import  jakarta.ws.rs.*
 import org.springframework.stereotype.Controller
 import jakarta.ws.rs.core.Response
 import jakarta.ws.rs.core.MediaType
