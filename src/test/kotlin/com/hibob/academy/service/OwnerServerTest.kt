@@ -3,14 +3,12 @@ package com.hibob.academy.service
 import com.hibob.academy.dao.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.*
-import java.time.LocalDate
-
 
 class OwnerServerTest {
     private val ownerDao = mock<OwnerDao>()
-    private val petDao = mock<PetsDao>()
-    private val ownerService = OwnerService(ownerDao, petDao)
+    private val ownerService = OwnerService(ownerDao)
 
     @Test
     fun `getAllOwners should return list of owners`() {
@@ -38,7 +36,6 @@ class OwnerServerTest {
     fun `getOwnerByPetId should return owner when exists`() {
         val companyId = 1L
         val petId = 1L
-        val pet = PetData(petId, ownerId = 1L, name = "dog", type = PetType.DOG, companyId, dateOfArrival = LocalDate.now())
         val owner1 = OwnerData(id = 1L, name = "chezi", companyId, employeeId = "1")
 
         whenever(ownerDao.getOwnerByPetId(petId, companyId)).thenReturn(owner1)
@@ -53,7 +50,11 @@ class OwnerServerTest {
 
         whenever(ownerDao.getOwnerByPetId(petId, companyId)).thenReturn(null)
 
-        assertEquals("the data you entered is incorrect in relation to the data that exists in the database", ownerService.getOwnerByPetId(petId, companyId))
+        val exception = assertThrows<IllegalArgumentException> {
+            ownerService.getOwnerByPetId(petId, companyId)
+        }
+
+        assertEquals("the data you entered is incorrect in relation to the data that exists in the database", exception.message)
     }
 
     @Test
@@ -63,10 +64,10 @@ class OwnerServerTest {
 
         whenever(ownerDao.getOwnerByPetId(petId, companyId)).thenReturn(null)
 
-        assertEquals("the data you entered is incorrect in relation to the data that exists in the database", ownerService.getOwnerByPetId(petId, companyId))
+        val exception = assertThrows<IllegalArgumentException> {
+            ownerService.getOwnerByPetId(petId, companyId)
+        }
+
+        assertEquals("the data you entered is incorrect in relation to the data that exists in the database", exception.message)
     }
 }
-
-
-
-

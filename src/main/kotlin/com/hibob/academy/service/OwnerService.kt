@@ -3,7 +3,7 @@ package com.hibob.academy.service
 import com.hibob.academy.dao.*
 import java.lang.IllegalArgumentException
 
-class OwnerService(private val ownerDao: OwnerDao, private val petDao: PetsDao) {
+class OwnerService(private val ownerDao: OwnerDao) {
 
     fun getAllOwners(companyId: Long): List<OwnerData> {
         return ownerDao.getAllOwners(companyId)

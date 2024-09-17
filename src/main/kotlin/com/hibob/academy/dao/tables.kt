@@ -33,7 +33,3 @@ fun typeEnumToString(type: PetType): String {
     }
 }
 
-enum class PetType {
-    DOG,
-    CAT;
-}
