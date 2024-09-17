@@ -5,11 +5,11 @@ import java.lang.IllegalArgumentException
 
 class OwnerService(private val ownerDao: OwnerDao, private val petDao: PetsDao) {
 
-    fun getAllOwnersByCompanyId(companyId: Long): List<OwnerData> {
+    fun getAllOwners(companyId: Long): List<OwnerData> {
         return ownerDao.getAllOwners(companyId)
     }
 
-    fun createOwnerIfNotExists(ownerData: OwnerDataInsert, companyId: Long) {
+    fun createOwnerIfNotExists(ownerData: OwnerDataInsert) {
         ownerDao.createOwnerIfNotExists(ownerData)
     }
 
