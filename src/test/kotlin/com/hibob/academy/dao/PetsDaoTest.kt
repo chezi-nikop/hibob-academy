@@ -5,19 +5,22 @@ import org.junit.jupiter.api.Assertions.*
 import com.hibob.academy.utils.BobDbTest
 import org.jooq.DSLContext
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import java.time.LocalDate
 
 @BobDbTest
 class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
 
     private val petDao = PetsDao(sql)
     val tablePets = PetsTable.instance
-    val companyId = 1L
-    val data: LocalDate = LocalDate.now()
-    val ownerId = 1L
+    private val companyId = 1L
 
+    val petTest1 = PetDataInsert(ownerId = 1L, name = "bi", type = PetType.DOG, companyId)
+    val petTest2 = PetDataInsert(null, name = "bi", type = PetType.DOG, companyId)
+
+
+    @BeforeEach
     @AfterEach
     fun cleanup() {
         sql.deleteFrom(tablePets).where(tablePets.companyId.eq(companyId)).execute()
@@ -25,81 +28,49 @@ class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
 
     @Test
     fun `get all pets by type wen we have pets in the data base`() {
-        val petTest= PetDataInsert(null, name = "A", PetType.DOG, companyId)
+        petDao.createPet(petTest1)
+        val date = petDao.getAllPetsByType(PetType.DOG, companyId)[0].dateOfArrival
+        val id = petDao.getAllPetsByType(PetType.DOG, companyId)[0].id
 
-        val testPetId = petDao.createPet(petTest)
+        val expectedResult = listOf(PetData(id, petTest1.ownerId, petTest1.name, petTest1.type, petTest1.companyId, date))
 
-        val allPetsInData = petDao.getAllPetsByType(PetType.DOG, companyId)
-
-        val checkTest = PetData(testPetId, petTest.ownerId, petTest.name, petTest.type, petTest.companyId, allPetsInData[0].dateOfArrival)
-
-        assertTrue(checkTest in allPetsInData)
+        assertEquals(expectedResult, petDao.getAllPetsByType(PetType.DOG, companyId))
     }
 
     @Test
     fun `get all pets by type wen we dont have pets in the data base`() {
-
+        val expectedResult = emptyList<PetData>()
         val allPetsInData = petDao.getAllPetsByType(PetType.DOG, companyId)
 
-        assertTrue(allPetsInData.isEmpty())
+        assertEquals(expectedResult, allPetsInData)
     }
 
-    @Test
-    fun `create a new pet that doesn't exist in the database`() {
-        val petTest = PetDataInsert(ownerId, name = "A", PetType.DOG, companyId)
-
-        val testPetId = petDao.createPet(petTest)
-
-        val allPetsInData = petDao.getAllPetsByType(PetType.DOG, companyId)
-
-        val checkTest = PetData(testPetId, petTest.ownerId, petTest.name, petTest.type, petTest.companyId, allPetsInData[0].dateOfArrival)
-
-        assertTrue(checkTest in allPetsInData)
-    }
-
-    @Test
-    fun `return the pet using its id when it exists in the database`() {
-        val petTest = PetDataInsert(ownerId, name = "A", PetType.DOG, companyId)
-
-        val newPetId = petDao.createPet(petTest)
-
-        val returnTest = petDao.getPet(newPetId, companyId)
-
-        val checkTest = PetData(newPetId, petTest.ownerId, petTest.name, petTest.type, petTest.companyId, petDao.getAllPetsByType(PetType.DOG, companyId)[0].dateOfArrival)
-
-        assertTrue(checkTest.equals(returnTest))
-    }
-
-    @Test
-    fun `return null wen we trying to get pet that does not exist in the database`() {
-        val newPetId = -1L
-
-        assertNull(petDao.getPet(newPetId, companyId))
-    }
 
     @Test
     fun `update the pet ownerId wen the ownerId exist`() {
-        val petTest = PetDataInsert(ownerId, name = "A", PetType.DOG, companyId)
-        val newPetId = petDao.createPet(petTest)
+        petDao.createPet(petTest1)
+        val date = petDao.getAllPetsByType(PetType.DOG, companyId)[0].dateOfArrival
+        val id = petDao.getAllPetsByType(PetType.DOG, companyId)[0].id
 
         val newOwnerId = 2L
+        petDao.updatePetOwnerId(id, newOwnerId, companyId)
 
-        val checkTest = petDao.updatePetOwnerId(newPetId, newOwnerId, companyId)
+        val expectedResult = listOf(PetData(id, newOwnerId, petTest1.name, petTest1.type, petTest1.companyId, date))
 
-        assertNull(checkTest)
-        assertTrue(petDao.getPet(newPetId, companyId)?.ownerId == ownerId)
+        assertEquals(expectedResult, petDao.getAllPetsByType(PetType.DOG, companyId))
     }
 
     @Test
-    fun `update the pet owner with the owner id wen the ownerId is null`() {
-        val petTest = PetDataInsert(null, name = "A", PetType.DOG, companyId)
-        val newPetId = petDao.createPet(petTest)
+    fun `update the pet ownerId wen the ownerId is null`() {
+        petDao.createPet(petTest2)
+        val date = petDao.getAllPetsByType(PetType.DOG, companyId)[0].dateOfArrival
+        val id = petDao.getAllPetsByType(PetType.DOG, companyId)[0].id
 
         val newOwnerId = 2L
+        petDao.updatePetOwnerId(id, newOwnerId, companyId)
 
-        val checkTest = petDao.updatePetOwnerId(newPetId, newOwnerId, companyId)
+        val expectedResult = listOf(PetData(id, newOwnerId, petTest1.name, petTest1.type, petTest1.companyId, date))
 
-        assertNotNull(checkTest)
-        assertTrue(petDao.getPet(newPetId, companyId)?.ownerId == newOwnerId)
+        assertEquals(expectedResult, petDao.getAllPetsByType(PetType.DOG, companyId))
     }
 }

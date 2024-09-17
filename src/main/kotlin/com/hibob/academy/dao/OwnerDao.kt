@@ -6,50 +6,42 @@ import org.jooq.RecordMapper
 
 class OwnerDao(private val sql: DSLContext) {
 
-    private val owner = OwnerTable.instance
+    private val ownerTable = OwnerTable.instance
     val petsTable = PetsTable()
 
     private val ownerMapper = RecordMapper<Record, OwnerData>
     { record ->
         OwnerData(
-            record[owner.ownerId],
-            record[owner.name],
-            record[owner.companyId],
-            record[owner.employeeId]
+            record[ownerTable.id],
+            record[ownerTable.name],
+            record[ownerTable.companyId],
+            record[ownerTable.employeeId]
         )
     }
 
     fun getAllOwners(companyId: Long): List<OwnerData> {
-        return sql.select(owner.ownerId, owner.name, owner.companyId, owner.employeeId)
-            .from(owner)
-            .where(owner.companyId.eq(companyId))
+        return sql.select(ownerTable.id, ownerTable.name, ownerTable.companyId, ownerTable.employeeId)
+            .from(ownerTable)
+            .where(ownerTable.companyId.eq(companyId))
             .fetch(ownerMapper)
     }
 
-    fun createOwnerIfNotExists(newOwnerData: OwnerDataInsert): Long? {
-        return  sql.insertInto(owner)
-            .set(owner.name, newOwnerData.name)
-            .set(owner.companyId, newOwnerData.companyId)
-            .set(owner.employeeId, newOwnerData.employeeId)
-            .onConflict(owner.companyId, owner.employeeId)
+    fun createOwnerIfNotExists(newOwnerData: OwnerDataInsert) {
+        sql.insertInto(ownerTable)
+            .set(ownerTable.name, newOwnerData.name)
+            .set(ownerTable.companyId, newOwnerData.companyId)
+            .set(ownerTable.employeeId, newOwnerData.employeeId)
+            .onConflict(ownerTable.companyId, ownerTable.employeeId)
             .doNothing()
-            .returning(owner.ownerId)
-            .fetchOne()?.let { it[owner.ownerId] }
-    }
+            .execute()
 
-    fun getOwnerById(id: Long, companyId: Long): OwnerData? {
-        return sql.select(owner.ownerId, owner.name, owner.companyId, owner.employeeId)
-            .from(owner)
-            .where(owner.ownerId.equal(id))
-            .and(owner.companyId.equal(companyId))
-            .fetchOne(ownerMapper)
     }
 
     fun getOwnerByPetId(petId: Long, companyId: Long): OwnerData? {
-        return sql.select(owner.ownerId, owner.name, owner.companyId, owner.employeeId)
-            .from(owner)
-            .join(petsTable).on(petsTable.ownerId.eq(owner.ownerId))
-            .where(petsTable.petId.eq(petId))
+        return sql.select(ownerTable.id, ownerTable.name, ownerTable.companyId, ownerTable.employeeId)
+            .from(ownerTable)
+            .join(petsTable).on(petsTable.ownerId.eq(ownerTable.id))
+            .where(petsTable.id.eq(petId))
             .and(petsTable.companyId.eq(companyId))
             .fetchOne(ownerMapper)
     }

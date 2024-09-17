@@ -4,6 +4,7 @@ import com.hibob.academy.utils.BobDbTest
 import org.jooq.DSLContext
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -12,27 +13,26 @@ class OwnerDaoTest @Autowired constructor(private val sql: DSLContext) {
 
     private val ownerDao = OwnerDao(sql)
     val tableOwner = OwnerTable.instance
-    val companyId = 1L
-    val name = "chezi"
+    val tablePets = PetsTable.instance
+    private val companyId = 1L
+    val owner1 = OwnerDataInsert(name ="checi nikop", companyId, employeeId = "1" )
 
+
+    @BeforeEach
     @AfterEach
     fun cleanup() {
         sql.deleteFrom(tableOwner).where(tableOwner.companyId.eq(companyId)).execute()
+        sql.deleteFrom(tablePets).where(tablePets.companyId.eq(companyId)).execute()
     }
 
     @Test
     fun `get all owners wen we got owners in the database`() {
-        val newOwner = OwnerDataInsert( name, companyId, employeeId = "1")
-        ownerDao.createOwnerIfNotExists(newOwner)
+        ownerDao.createOwnerIfNotExists(owner1)
+        val ownerId = ownerDao.getAllOwners(companyId)[0].id
 
-        val ownerId = ownerDao.getAllOwners(companyId)[0].ownerId
+        val expectedResult = listOf(OwnerData(ownerId, owner1.name, owner1.companyId, owner1.employeeId))
 
-        val checkOwner = OwnerData(ownerId, name, companyId, employeeId = "1" )
-
-        val allOwners = ownerDao.getAllOwners(companyId)
-
-        assertTrue(checkOwner in allOwners)
-        assertTrue(allOwners.size.equals(1))
+        assertEquals(expectedResult, ownerDao.getAllOwners(companyId))
     }
 
     @Test
@@ -43,92 +43,62 @@ class OwnerDaoTest @Autowired constructor(private val sql: DSLContext) {
     }
 
     @Test
-    fun `create a new owner that doesn't exist in the database`() {
-        val newOwner = OwnerDataInsert(name, companyId, employeeId = "1")
-        ownerDao.createOwnerIfNotExists(newOwner)
+    fun `create a new owner`() {
+        ownerDao.createOwnerIfNotExists(owner1)
+        val ownerId = ownerDao.getAllOwners(companyId)[0].id
+        val expectedResult = listOf(OwnerData(ownerId, owner1.name, owner1.companyId, owner1.employeeId))
 
-        val ownerId = ownerDao.getAllOwners(companyId)[0].ownerId
 
-        val checkOwner = OwnerData(ownerId, name, companyId, employeeId = "1")
-
-        assertTrue(checkOwner.equals(ownerDao.getAllOwners(companyId)[0]))
+        assertEquals(expectedResult, ownerDao.getAllOwners(companyId))
     }
 
     @Test
-    fun `create a new owner that exist in the database`() {
-        val newOwner = OwnerDataInsert(name, companyId, employeeId = "1")
-
-        ownerDao.createOwnerIfNotExists(newOwner)
-        ownerDao.createOwnerIfNotExists(newOwner)
-
-        val ownerId = ownerDao.getAllOwners(companyId)[0].ownerId
-
-        val checkOwner = OwnerData(ownerId, name, companyId, employeeId = "1")
-        val ownerList = listOf(checkOwner)
-
-        val returnList = ownerDao.getAllOwners(companyId)
-
-        assertTrue(ownerList.containsAll(returnList))
-        assertTrue(returnList.size.equals(1))
+    fun `create a new owner null`() {
+        val expectedResult = emptyList<OwnerData>()
+        assertEquals(expectedResult, ownerDao.getAllOwners(companyId))
     }
 
     @Test
-    fun `get owner by id wen we have owner in the database`() {
-        val newOwner = OwnerDataInsert(name, companyId, employeeId = "1")
+    fun `create the same owner`() {
+        ownerDao.createOwnerIfNotExists(owner1)
+        ownerDao.createOwnerIfNotExists(owner1)
 
-        ownerDao.createOwnerIfNotExists(newOwner)
+        val ownerId = ownerDao.getAllOwners(companyId)[0].id
 
-        val ownerId = ownerDao.getAllOwners(companyId)[0].ownerId
+        val expectedResult = listOf(OwnerData(ownerId, owner1.name, owner1.companyId, owner1.employeeId))
 
-        val checkOwner = OwnerData(ownerId, name, companyId, employeeId = "1")
-        val returnOwner = ownerDao.getOwnerById(ownerId, companyId)
-
-        assertTrue(checkOwner.equals(returnOwner))
+        assertEquals(expectedResult, ownerDao.getAllOwners(companyId))
     }
 
     @Test
-    fun `trying to get owner by id wen we dont have this owner in the database`() {
-        val newOwner = OwnerDataInsert(name, companyId, employeeId = "1")
-        ownerDao.createOwnerIfNotExists(newOwner)
-
-        val newOwnerId = -1L
-
-        assertEquals(null, ownerDao.getOwnerById(newOwnerId, companyId))
-    }
-
-    @Test
-    fun `get owner info by PetId wen the pet has owner in the dataBase`() {
-        val ownerTest = OwnerDataInsert(name = "chezi", companyId, employeeId = "1")
-        ownerDao.createOwnerIfNotExists(ownerTest)
-
-        val ownerId = ownerDao.getAllOwners(companyId)[0].ownerId
-
-        val checkOwner = OwnerData(ownerId, name, companyId, employeeId = "1")
+    fun `get owner info by petId`() {
+        ownerDao.createOwnerIfNotExists(owner1)
+        val ownerId = ownerDao.getAllOwners(companyId)[0].id
+        val newOwner = ownerDao.getAllOwners(companyId)[0]
 
         val petDao = PetsDao(sql)
         val petTest = PetDataInsert(ownerId , name = "A", PetType.DOG , companyId)
-        val newPetId = petDao.createPet(petTest)
+        petDao.createPet(petTest)
+        val petId = petDao.getAllPetsByType(PetType.DOG, companyId)[0].id
 
-        val checkOwnerTest = ownerDao.getOwnerByPetId(newPetId, companyId)
+        val checkOwnerTest = ownerDao.getOwnerByPetId(petId, companyId)
 
-        assertTrue(checkOwner.equals(checkOwnerTest))
+        assertEquals(newOwner, checkOwnerTest)
     }
 
     @Test
-    fun `try to get owner by petId when no pet exists in the database`() {
+    fun `get null owner when no pet exists in the database`() {
         val ownerFromPetId = ownerDao.getOwnerByPetId(petId = 1L, companyId)
 
         assertNull(ownerFromPetId)
     }
 
     @Test
-    fun `try to get owner by petId when no owner exists in the database`() {
+    fun `get null owner by petId when no owner exists in the database`() {
         val petDao = PetsDao(sql)
         val petTest = PetDataInsert(null , name = "A", PetType.DOG , companyId)
-        val newPetId = petDao.createPet(petTest)
-
-        val ownerFromPetId = ownerDao.getOwnerByPetId(newPetId, companyId)
-
-        assertNull(ownerFromPetId)
+        petDao.createPet(petTest)
+        val petId = petDao.getAllPetsByType(PetType.DOG, companyId)[0].id
+        assertNull(ownerDao.getOwnerByPetId(petId, companyId))
     }
 }

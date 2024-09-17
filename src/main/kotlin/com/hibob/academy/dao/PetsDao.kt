@@ -6,53 +6,42 @@ import org.jooq.Record
 
 class PetsDao(private val sql: DSLContext) {
 
-    private val pet = PetsTable.instance
+    private val petTable = PetsTable.instance
 
     private val petMapper = RecordMapper<Record, PetData>
     { record ->
         PetData(
-            record[pet.petId],
-            record[pet.ownerId],
-            record[pet.name],
-            enumValueOf<PetType>(record[pet.type]),
-            record[pet.companyId],
-            record[pet.dateOfArrival]
+            record[petTable.id],
+            record[petTable.ownerId],
+            record[petTable.name],
+            enumValueOf<PetType>(record[petTable.type]),
+            record[petTable.companyId],
+            record[petTable.dateOfArrival]
         )
     }
 
     fun getAllPetsByType(type: PetType, companyId: Long) : List<PetData> {
-        return sql.select(pet.ownerId, pet.petId, pet.name, pet.type, pet.companyId, pet.dateOfArrival)
-            .from(pet)
-            .where(pet.type.eq(typeEnumToString(type)))
-            .and(pet.companyId.eq(companyId))
+        return sql.select(petTable.id, petTable.ownerId, petTable.name, petTable.type, petTable.companyId, petTable.dateOfArrival)
+            .from(petTable)
+            .where(petTable.type.eq(typeEnumToString(type)))
+            .and(petTable.companyId.eq(companyId))
             .fetch(petMapper)
     }
 
-    fun createPet(newPetData: PetDataInsert) : Long {
-        return sql.insertInto(pet)
-            .set(pet.ownerId, newPetData.ownerId)
-            .set(pet.name, newPetData.name)
-            .set(pet.type, typeEnumToString(newPetData.type))
-            .set(pet.companyId, newPetData.companyId)
-            .returning(pet.petId)
-            .fetchOne()!![pet.petId]
+    fun createPet(newPetData: PetDataInsert) {
+        sql.insertInto(petTable)
+            .set(petTable.ownerId, newPetData.ownerId)
+            .set(petTable.name, newPetData.name)
+            .set(petTable.type, typeEnumToString(newPetData.type))
+            .set(petTable.companyId, newPetData.companyId)
+            .execute()
     }
 
-    fun getPet(petId: Long, companyId: Long): PetData? {
-        return sql.select(pet.ownerId, pet.petId, pet.name, pet.type, pet.companyId, pet.dateOfArrival)
-            .from(pet)
-            .where(pet.petId.eq(petId))
-            .and(pet.companyId.eq(companyId))
-            .fetchOne(petMapper)
-    }
-
-    fun updatePetOwnerId(petId: Long, ownerId: Long, companyId: Long) : Long? {
-        return sql.update(pet)
-            .set(pet.ownerId, ownerId)
-            .where(pet.petId.eq(petId)
-            .and(pet.ownerId.isNull))
-            .and(pet.companyId.eq(companyId))
-            .returning(pet.petId)
-            .fetchOne()?.let { it[pet.petId] }
+    fun updatePetOwnerId(petId: Long, ownerId: Long, companyId: Long) {
+        sql.update(petTable)
+            .set(petTable.ownerId, ownerId)
+            .where(petTable.id.eq(petId))
+            .and(petTable.companyId.eq(companyId))
+            .execute()
     }
 }
