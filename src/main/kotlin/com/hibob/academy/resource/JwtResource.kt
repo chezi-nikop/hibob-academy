@@ -10,12 +10,9 @@ import jakarta.ws.rs.POST
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.core.NewCookie
 import jakarta.ws.rs.core.Response
-
-
-
+import com.hibob.academy.filters.AuthenticationFilter
 
 data class User(val email: String, val userName: String, val isAdmin: Boolean)
-
 
 @Controller
 @Produces(MediaType.APPLICATION_JSON)
@@ -27,7 +24,7 @@ class JwtResource(private val sessionService: SessionService) {
     @Consumes(MediaType.APPLICATION_JSON)
     fun addUser(user: User): Response {
         val tokenJwt = sessionService.createJwtToken(user) // Assuming createJWTToken returns a JWT
-        val cookie = NewCookie.Builder("chezi_cookie_name").value(tokenJwt).build() //Creating new cookie
+        val cookie = NewCookie.Builder(AuthenticationFilter.COOKIE_NAME).value(tokenJwt).build() //Creating new cookie
         return Response.ok().cookie(cookie).build()
     }
 
