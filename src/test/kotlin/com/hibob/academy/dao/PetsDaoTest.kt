@@ -19,7 +19,6 @@ class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
     val petTest1 = PetDataInsert(ownerId = 1L, name = "bi", type = PetType.DOG, companyId)
     val petTest2 = PetDataInsert(null, name = "bi", type = PetType.DOG, companyId)
 
-
     @BeforeEach
     @AfterEach
     fun cleanup() {
@@ -29,10 +28,19 @@ class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
     @Test
     fun `get all pets by type wen we have pets in the data base`() {
         petDao.createPet(petTest1)
-        val date = petDao.getAllPetsByType(PetType.DOG, companyId)[0].dateOfArrival
-        val id = petDao.getAllPetsByType(PetType.DOG, companyId)[0].id
+        val pet1 =  petDao.getAllPetsByType(PetType.DOG, companyId)[0]
+        val date1 = pet1.dateOfArrival
+        val id1 = pet1.id
 
-        val expectedResult = listOf(PetData(id, petTest1.ownerId, petTest1.name, petTest1.type, petTest1.companyId, date))
+        petDao.createPet(petTest2)
+        val pet2 =  petDao.getAllPetsByType(PetType.DOG, companyId)[1]
+        val date2 = pet2.dateOfArrival
+        val id2 = pet2.id
+
+        val expectedResult = listOf(
+            PetData(id1, petTest1.ownerId, petTest1.name, petTest1.type, petTest1.companyId, date1),
+            PetData(id2, petTest2.ownerId, petTest2.name, petTest2.type, petTest2.companyId, date2)
+        )
 
         assertEquals(expectedResult, petDao.getAllPetsByType(PetType.DOG, companyId))
     }
@@ -45,12 +53,12 @@ class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
         assertEquals(expectedResult, allPetsInData)
     }
 
-
     @Test
     fun `update the pet ownerId wen the ownerId exist`() {
         petDao.createPet(petTest1)
-        val date = petDao.getAllPetsByType(PetType.DOG, companyId)[0].dateOfArrival
-        val id = petDao.getAllPetsByType(PetType.DOG, companyId)[0].id
+        val pet =  petDao.getAllPetsByType(PetType.DOG, companyId)[0]
+        val date = pet.dateOfArrival
+        val id = pet.id
 
         val newOwnerId = 2L
         petDao.updatePetOwnerId(id, newOwnerId, companyId)
@@ -63,8 +71,9 @@ class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
     @Test
     fun `update the pet ownerId wen the ownerId is null`() {
         petDao.createPet(petTest2)
-        val date = petDao.getAllPetsByType(PetType.DOG, companyId)[0].dateOfArrival
-        val id = petDao.getAllPetsByType(PetType.DOG, companyId)[0].id
+        val pet =petDao.getAllPetsByType(PetType.DOG, companyId)[0]
+        val date = pet.dateOfArrival
+        val id = pet.id
 
         val newOwnerId = 2L
         petDao.updatePetOwnerId(id, newOwnerId, companyId)

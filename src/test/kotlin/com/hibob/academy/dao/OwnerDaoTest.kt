@@ -12,11 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired
 class OwnerDaoTest @Autowired constructor(private val sql: DSLContext) {
 
     private val ownerDao = OwnerDao(sql)
+    private val petDao = PetsDao(sql)
+
     val tableOwner = OwnerTable.instance
     val tablePets = PetsTable.instance
+
     private val companyId = 1L
     val owner1 = OwnerDataInsert(name ="checi nikop", companyId, employeeId = "1" )
-
+    val owner2 = OwnerDataInsert(name ="checi nikop", companyId, employeeId = "2" )
 
     @BeforeEach
     @AfterEach
@@ -28,9 +31,15 @@ class OwnerDaoTest @Autowired constructor(private val sql: DSLContext) {
     @Test
     fun `get all owners wen we got owners in the database`() {
         ownerDao.createOwnerIfNotExists(owner1)
-        val ownerId = ownerDao.getAllOwners(companyId)[0].id
+        val ownerId1 = ownerDao.getAllOwners(companyId)[0].id
 
-        val expectedResult = listOf(OwnerData(ownerId, owner1.name, owner1.companyId, owner1.employeeId))
+        ownerDao.createOwnerIfNotExists(owner2)
+        val ownerId2 = ownerDao.getAllOwners(companyId)[1].id
+
+        val expectedResult = listOf(
+            OwnerData(ownerId1, owner1.name, owner1.companyId, owner1.employeeId),
+            OwnerData(ownerId2, owner2.name, owner2.companyId, owner2.employeeId),
+        )
 
         assertEquals(expectedResult, ownerDao.getAllOwners(companyId))
     }
@@ -73,10 +82,9 @@ class OwnerDaoTest @Autowired constructor(private val sql: DSLContext) {
     @Test
     fun `get owner info by petId`() {
         ownerDao.createOwnerIfNotExists(owner1)
-        val ownerId = ownerDao.getAllOwners(companyId)[0].id
         val newOwner = ownerDao.getAllOwners(companyId)[0]
+        val ownerId = newOwner.id
 
-        val petDao = PetsDao(sql)
         val petTest = PetDataInsert(ownerId , name = "A", PetType.DOG , companyId)
         petDao.createPet(petTest)
         val petId = petDao.getAllPetsByType(PetType.DOG, companyId)[0].id
