@@ -9,12 +9,8 @@ class OwnerService(private val ownerDao: OwnerDao, private val petDao: PetsDao) 
         return ownerDao.getAllOwners(companyId)
     }
 
-    fun createOwnerIfNotExists(ownerData: OwnerDataInsert, companyId: Long): Long {
-        return ownerDao.createOwnerIfNotExists(ownerData) ?: throw IllegalArgumentException("There is already an owner with such data in the system")
-    }
-
-    fun getOwnerById(id: Long, companyId: Long): OwnerData {
-        return ownerDao.getOwnerById(id, companyId) ?: throw IllegalArgumentException("There is no owner with such id or companyId")
+    fun createOwnerIfNotExists(ownerData: OwnerDataInsert, companyId: Long) {
+        ownerDao.createOwnerIfNotExists(ownerData)
     }
 
     fun getOwnerByPetId(petId: Long, companyId: Long): OwnerData {
