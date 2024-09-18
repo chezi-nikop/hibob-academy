@@ -59,4 +59,42 @@ class PetsServiceTest {
 
         assertEquals("the information you entered does not match the database", exception.message )
     }
+
+    @Test
+    fun `getPetsByOwnerId should return empty list when owner has no pets or wen owner dose not exists`() {
+        val ownerId = 1L
+        val companyId = 1L
+        val expectedList = emptyList<PetData>()
+
+        whenever(petDao.getPetsByOwnerId(ownerId, companyId)).thenReturn(expectedList)
+
+        val actualList = petsService.getPetsByOwnerId(ownerId, companyId)
+
+        assertEquals(expectedList, actualList)
+    }
+
+    @Test
+    fun `countPetsByType should return correct count of pets by type`() {
+        val expectedCount = mapOf(
+            PetType.DOG to 2,
+            PetType.CAT to 1
+        )
+
+        whenever(petDao.countPetsByType()).thenReturn(expectedCount)
+
+        val actualCount = petsService.countPetsByType()
+
+        assertEquals(expectedCount, actualCount)
+    }
+
+    @Test
+    fun `countPetsByType should return empty map when no pets exist`() {
+        val expectedCount = emptyMap<PetType, Int>()
+
+        whenever(petDao.countPetsByType()).thenReturn(expectedCount)
+
+        val actualCount = petsService.countPetsByType()
+
+        assertEquals(expectedCount, actualCount)
+    }
 }

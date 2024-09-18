@@ -21,4 +21,12 @@ class PetsService(private val petDao: PetsDao) {
         val checkUpdate = petDao.updatePetOwnerId(petId, ownerId, companyId)
         if (checkUpdate.equals(0)) throw IllegalArgumentException("the information you entered does not match the database")
     }
+
+    fun getPetsByOwnerId(ownerId: Long, companyId: Long): List<PetData> {
+        return petDao.getPetsByOwnerId(ownerId, companyId)
+    }
+
+    fun countPetsByType(): Map<PetType, Int> {
+        return petDao.countPetsByType()
+    }
 }
