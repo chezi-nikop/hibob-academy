@@ -153,4 +153,15 @@ class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
 
         assertTrue(countPetByType.isEmpty())
     }
+
+    @Test
+    fun `updateOwnerForPets should update owner for all pet IDs`() {
+        val ownerId = 1L
+        val petIds = listOf(1L, 2L)
+
+        petDao.updateOwnerForPets(ownerId, petIds)
+
+
+
+    }
 }
