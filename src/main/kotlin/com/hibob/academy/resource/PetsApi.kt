@@ -8,7 +8,6 @@ import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import org.springframework.stereotype.Controller
 
-
 @Controller
 @Path("/api/pets")
 @Produces(MediaType.APPLICATION_JSON)
@@ -16,8 +15,8 @@ import org.springframework.stereotype.Controller
 class PetsResource(private val petsService: PetsService) {
 
     @GET
-    @Path("/{companyId}")
-    fun getAllPetsByType(type: PetType,companyId: Long): Response {
+    @Path("/{companyId}/{type}")
+    fun getAllPetsByType(@PathParam("type") type: PetType,@PathParam("companyId") companyId: Long): Response {
         val allOPets = petsService.getAllPetsByType(type, companyId)
         return Response.ok(allOPets).build()
     }
@@ -25,11 +24,11 @@ class PetsResource(private val petsService: PetsService) {
     @POST
     fun createPet(pet: PetDataInsert): Response {
         petsService.createPet(pet)
-        return Response.ok().build()
+        return Response.ok(Response.Status.CREATED).build()
     }
 
     @PUT
-    @Path("/pets/{petId}/{ownerId}/{companyId}")
+    @Path("/{petId}/{ownerId}/{companyId}")
     fun updatePetOwnerId(@PathParam("petId") petId: Long, @PathParam("ownerId") ownerId: Long, @PathParam("companyId") companyId: Long): Response {
         val owner = petsService.updatePetOwnerId(petId, ownerId, petId)
         return Response.ok(owner).build()
