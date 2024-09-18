@@ -24,15 +24,17 @@ class AuthenticationFilter : ContainerRequestFilter {
         verify(cookie[COOKIE_NAME]?.value, requestContext)
     }
 
-    private val jwtParser = Jwts.parser().setSigningKey(SECRET_KEY) //It uses the secret key SECRET_KEY in order to interpret the JWT. It can verify the validity and signature of the JWT.
+    //It uses the secret key SECRET_KEY in order to interpret the JWT. It can verify the validity and signature of the JWT.
+    private val jwtParser = Jwts.parser().setSigningKey(SECRET_KEY)
 
     fun verify(cookie: String?, requestContext: ContainerRequestContext) {
         if (cookie.isNullOrEmpty()) {
-            requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity("Missing token").build()) //abortWith func used in case the authentication token is missing or incorrect please. returns HTTP 401
-            return
+            //abortWith func used in case the authentication token is missing or incorrect please. returns HTTP 401
+            requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity("Missing token").build())
         }
         try {
-            jwtParser.parseClaimsJws(cookie) //Try to interpret the cookie, if it is correct, the system pulls out the claims
+            //Try to interpret the cookie, if it is correct, the system pulls out the claims
+            jwtParser.parseClaimsJws(cookie)
         } catch (exception: Exception) {
             requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity("Invalid or expired token").build())
         }
