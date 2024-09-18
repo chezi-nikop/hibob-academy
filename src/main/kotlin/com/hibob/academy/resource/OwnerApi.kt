@@ -2,17 +2,16 @@ package com.hibob.academy.resource
 
 import com.hibob.academy.dao.OwnerDataInsert
 import com.hibob.academy.service.OwnerService
-import jakarta.ws.rs.GET
-import jakarta.ws.rs.POST
-import jakarta.ws.rs.Path
-import jakarta.ws.rs.PathParam
-import jakarta.ws.rs.Produces
+import jakarta.ws.rs.*
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Controller
 
-@Component
-@Path("/example")
+
+@Controller
+@Path("/api/owner")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 class OwnerResource(private val ownerService: OwnerService) {
 
     @GET
@@ -23,8 +22,9 @@ class OwnerResource(private val ownerService: OwnerService) {
     }
 
     @POST
-    fun creatOwner(owner: OwnerDataInsert) {
+    fun creatOwner(owner: OwnerDataInsert): Response {
         ownerService.createOwnerIfNotExists(owner)
+        return Response.ok().build()
     }
 
     @GET
