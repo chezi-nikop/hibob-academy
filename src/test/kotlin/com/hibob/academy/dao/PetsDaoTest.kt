@@ -22,8 +22,7 @@ class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
     @BeforeEach
     @AfterEach
     fun cleanup() {
-        sql.deleteFrom(tablePets).where(tablePets.companyId.eq(companyId)).execute()
-        sql.deleteFrom(tablePets).where(tablePets.companyId.eq(otherCompanyId)).execute()
+        sql.deleteFrom(tablePets).execute()
 
     }
 
@@ -141,7 +140,7 @@ class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
         petDao.createPet(petTest2)
         petDao.createPet(petTest3)
 
-        val countPetByType = petDao.countPetsByType()
+        val countPetByType = petDao.countPetsByType(companyId)
 
         assertEquals(2, countPetByType[PetType.DOG])
         assertEquals(1, countPetByType[PetType.CAT])
@@ -149,7 +148,7 @@ class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
 
     @Test
     fun `count pets by type when no pets exist in the database`() {
-        val countPetByType = petDao.countPetsByType()
+        val countPetByType = petDao.countPetsByType(companyId)
 
         assertTrue(countPetByType.isEmpty())
     }
