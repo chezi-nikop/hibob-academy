@@ -23,6 +23,8 @@ class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
     @AfterEach
     fun cleanup() {
         sql.deleteFrom(tablePets).where(tablePets.companyId.eq(companyId)).execute()
+        sql.deleteFrom(tablePets).where(tablePets.companyId.eq(otherCompanyId)).execute()
+
     }
 
     @Test
