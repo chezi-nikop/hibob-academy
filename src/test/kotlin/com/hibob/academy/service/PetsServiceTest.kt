@@ -75,25 +75,28 @@ class PetsServiceTest {
 
     @Test
     fun `countPetsByType should return correct count of pets by type`() {
+        val companyId = 1L
+
         val expectedCount = mapOf(
             PetType.DOG to 2,
             PetType.CAT to 1
         )
 
-        whenever(petDao.countPetsByType()).thenReturn(expectedCount)
+        whenever(petDao.countPetsByType(companyId)).thenReturn(expectedCount)
 
-        val actualCount = petsService.countPetsByType()
+        val actualCount = petsService.countPetsByType(companyId)
 
         assertEquals(expectedCount, actualCount)
     }
 
     @Test
     fun `countPetsByType should return empty map when no pets exist`() {
+        val companyId = 1L
         val expectedCount = emptyMap<PetType, Int>()
 
-        whenever(petDao.countPetsByType()).thenReturn(expectedCount)
+        whenever(petDao.countPetsByType(companyId)).thenReturn(expectedCount)
 
-        val actualCount = petsService.countPetsByType()
+        val actualCount = petsService.countPetsByType(companyId)
 
         assertEquals(expectedCount, actualCount)
     }
