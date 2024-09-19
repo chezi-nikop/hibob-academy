@@ -156,12 +156,44 @@ class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
 
     @Test
     fun `updateOwnerForPets should update owner for all pet IDs`() {
-        val ownerId = 1L
-        val petIds = listOf(1L, 2L)
+        petDao.createPet(petTest1)
+        petDao.createPet(petTest2)
 
-        petDao.updateOwnerForPets(ownerId, petIds)
+        val returnPet1 = petDao.getAllPetsByType(PetType.DOG, companyId)[0]
+        val returnPet2 = petDao.getAllPetsByType(PetType.DOG, companyId)[1]
 
+        val ownerId = 2L
+        val allPets = listOf(returnPet1.id, returnPet2.id)
 
+        petDao.updateOwnerForPets(ownerId, allPets)
 
+        val expectedList = listOf(
+            PetData(returnPet1.id, ownerId, petTest1.name, petTest1.type, petTest1.companyId, returnPet1.dateOfArrival),
+            PetData(returnPet2.id, ownerId, petTest2.name, petTest2.type, petTest2.companyId, returnPet2.dateOfArrival)
+            )
+
+        val returnList =  petDao.getAllPetsByType(PetType.DOG, companyId)
+
+        assertEquals(expectedList, returnList)
+    }
+
+    @Test
+    fun `insertMultiplePets should insert all pets into the database`() {
+        val pets = listOf(petTest1, petTest2)
+        petDao.insertMultiplePets(pets)
+
+        val returnPet1 = petDao.getAllPetsByType(PetType.DOG, companyId)[0]
+        val returnPet2 = petDao.getAllPetsByType(PetType.DOG, companyId)[1]
+
+        val expectedList = listOf(
+            PetData(returnPet1.id, petTest1.ownerId, petTest1.name, petTest1.type, petTest1.companyId, returnPet1.dateOfArrival),
+            PetData(returnPet2.id, petTest2.ownerId, petTest2.name, petTest2.type, petTest2.companyId, returnPet2.dateOfArrival)
+        )
+
+        val returnList = petDao.getAllPetsByType(PetType.DOG, companyId)
+
+        assertEquals(expectedList, returnList)
     }
 }
+
+
