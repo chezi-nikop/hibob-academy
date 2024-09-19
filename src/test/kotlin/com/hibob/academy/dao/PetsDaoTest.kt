@@ -195,5 +195,3 @@ class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
         assertEquals(expectedList, returnList)
     }
 }
-
-
