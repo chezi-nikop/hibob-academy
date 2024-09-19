@@ -32,14 +32,14 @@ class PetsService(private val petDao: PetsDao) {
     }
 
     fun updateOwnerForPets(ownerId: Long, petIds: List<Long>) {
-        if (petIds.isEmpty()) throw IllegalArgumentException("petIds cannot be empty")
+        if (petIds.isEmpty()) throw BadRequestException("petIds cannot be empty")
         val checkUpDate = petDao.updateOwnerForPets(ownerId, petIds)
-        if (checkUpDate.equals(0)) throw IllegalArgumentException("No pets were updated, please check the provided ownerId and petIds")
+        if (checkUpDate.equals(0)) throw BadRequestException("No pets were updated, please check the provided ownerId and petIds")
     }
 
     fun insertMultiplePets(pets: List<PetDataInsert>) {
-        if (pets.isEmpty()) throw IllegalArgumentException("pets cannot be empty")
+        if (pets.isEmpty()) throw BadRequestException("pets cannot be empty")
         val checkUpDate = petDao.insertMultiplePets(pets)
-        if (checkUpDate.equals(0)) throw IllegalArgumentException("No pets were inserted, please check the provided data")
+        if (checkUpDate.equals(0)) throw BadRequestException("No pets were inserted, please check the provided data")
     }
 }
