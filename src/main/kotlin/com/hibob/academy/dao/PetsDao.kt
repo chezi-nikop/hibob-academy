@@ -54,9 +54,10 @@ class PetsDao(private val sql: DSLContext) {
             .and(petTable.ownerId.eq(ownerId))
             .fetch(petMapper)
 
-    fun countPetsByType(): Map<PetType, Int> {
+    fun countPetsByType(companyId: Long): Map<PetType, Int> {
         return sql.select(petTable.type, DSL.count())
             .from(petTable)
+            .where(petTable.companyId.eq(companyId))
             .groupBy(petTable.type)
             .fetch()
             .associate { (type, count) -> enumValueOf<PetType>(type) to count }
