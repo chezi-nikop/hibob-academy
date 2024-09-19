@@ -1,6 +1,7 @@
 package com.hibob.academy.service
 
 import com.hibob.academy.dao.*
+import jakarta.ws.rs.BadRequestException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -53,7 +54,7 @@ class PetsServiceTest {
 
         whenever(petDao.updatePetOwnerId(petId, newOwnerId, companyId)).thenReturn(0)
 
-        val exception = assertThrows<IllegalArgumentException> {
+        val exception = assertThrows<BadRequestException> {
             petsService.updatePetOwnerId(petId, companyId, newOwnerId)
         }
 
