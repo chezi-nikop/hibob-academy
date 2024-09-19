@@ -101,4 +101,56 @@ class PetsServiceTest {
 
         assertEquals(expectedCount, actualCount)
     }
+
+    @Test
+    fun `updateOwnerForPets should throw exception when petIds list is empty`() {
+        val ownerId = 1L
+        val emptyList = emptyList<Long>()
+
+        val exception = assertThrows<IllegalArgumentException> {
+            petsService.updateOwnerForPets(ownerId, emptyList)
+        }
+
+        assertEquals("petIds cannot be empty", exception.message )
+    }
+
+    @Test
+    fun `updateOwnerForPets should throw exception when no pets were updated`() {
+        val ownerId = 1L
+        val petsId = listOf(1L, 2L, 3L)
+
+        whenever(petDao.updateOwnerForPets(ownerId, petsId)).thenReturn(0)
+
+        val exception = assertThrows<IllegalArgumentException> {
+            petsService.updateOwnerForPets(ownerId, petsId)
+        }
+
+        assertEquals("No pets were updated, please check the provided ownerId and petIds", exception.message )
+    }
+
+    @Test
+    fun `insertMultiplePets should throw exception when pet list is empty`() {
+        val emptyList = emptyList<PetDataInsert>()
+
+        val exception = assertThrows<IllegalArgumentException> {
+            petsService.insertMultiplePets(emptyList)
+        }
+
+        assertEquals("pets cannot be empty", exception.message )
+    }
+
+    @Test
+    fun `insertMultiplePets should throw exception when no pets were inserted`() {
+        val pets =  listOf(
+            PetDataInsert(ownerId = 1L, name = "A", type = PetType.DOG, companyId = 1L),
+            PetDataInsert(ownerId = 2L, name = "B", type = PetType.DOG, companyId = 2L),
+            )
+
+        whenever(petDao.insertMultiplePets(pets)).thenReturn(0)
+
+        val exception = assertThrows<IllegalArgumentException> {
+            petsService.insertMultiplePets(pets)
+        }
+        assertEquals("No pets were inserted, please check the provided data", exception.message )
+    }
 }
