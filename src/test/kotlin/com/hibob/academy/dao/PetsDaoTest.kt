@@ -165,7 +165,7 @@ class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
         val ownerId = 2L
         val allPets = listOf(returnPet1.id, returnPet2.id)
 
-        petDao.updateOwnerForPets(ownerId, allPets)
+        petDao.updateOwnerForPets(ownerId, allPets, companyId)
 
         val expectedList = listOf(
             PetData(returnPet1.id, ownerId, petTest1.name, petTest1.type, petTest1.companyId, returnPet1.dateOfArrival),
@@ -195,5 +195,3 @@ class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
         assertEquals(expectedList, returnList)
     }
 }
-
-
