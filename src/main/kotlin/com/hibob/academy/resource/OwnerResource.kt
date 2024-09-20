@@ -10,7 +10,6 @@ import org.springframework.stereotype.Controller
 @Controller
 @Path("/api/owner")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 class OwnerResource(private val ownerService: OwnerService) {
 
     @GET
