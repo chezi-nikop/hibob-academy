@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired
 class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
 
     private val petDao = PetsDao(sql)
-    val tablePets = PetsTable.instance
     private val companyId = 1L
     private val otherCompanyId = 2L
 
@@ -22,9 +21,8 @@ class PetsDaoTest @Autowired constructor(private val sql: DSLContext)  {
     @BeforeEach
     @AfterEach
     fun cleanup() {
-        sql.deleteFrom(tablePets).where(tablePets.companyId.eq(companyId)).execute()
-        sql.deleteFrom(tablePets).where(tablePets.companyId.eq(otherCompanyId)).execute()
-
+        petDao.deleteTable(companyId)
+        petDao.deleteTable(otherCompanyId)
     }
 
     @Test
