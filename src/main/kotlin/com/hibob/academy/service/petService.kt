@@ -30,12 +30,4 @@ class PetsService(private val petDao: PetsDao) {
     fun countPetsByType(companyId: Long): Map<PetType, Int> {
         return petDao.countPetsByType(companyId)
     }
-
-    fun getPetsByOwnerId(ownerId: Long, companyId: Long): List<PetData> {
-        return petDao.getPetsByOwnerId(ownerId, companyId)
-    }
-
-    fun countPetsByType(companyId: Long): Map<PetType, Int> {
-        return petDao.countPetsByType(companyId)
-    }
 }
