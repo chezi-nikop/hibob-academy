@@ -63,6 +63,31 @@ class PetsDao(private val sql: DSLContext) {
             .associate { (type, count) -> enumValueOf<PetType>(type) to count }
     }
 
+    fun updateOwnerForPets(ownerId: Long, petIds: List<Long>, companyId: Long) =
+        sql.update(petTable)
+            .set(petTable.ownerId, ownerId)
+            .where(petTable.id.`in`(petIds))
+            .and(petTable.companyId.eq(companyId))
+            .execute()
+
+    fun insertMultiplePets(pets: List<PetDataInsert>): Int {
+        val insert = sql.insertInto(petTable)
+            .columns(petTable.ownerId, petTable.name, petTable.type, petTable.companyId)
+            .values(
+                DSL.param(petTable.ownerId),
+                DSL.param(petTable.name),
+                DSL.param(petTable.type),
+                DSL.param(petTable.companyId)
+            )
+        val batch = sql.batch(insert)
+
+        pets.forEach { pet ->
+            batch.bind(pet.ownerId, pet.name, pet.type, pet.companyId)
+        }
+        val numOfExecute = batch.execute()
+        return numOfExecute.size
+    }
+
     fun deleteTable(companyId: Long) {
         sql.deleteFrom(petTable)
             .where(petTable.companyId.eq(companyId))

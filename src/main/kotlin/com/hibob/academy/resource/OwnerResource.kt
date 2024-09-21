@@ -10,12 +10,11 @@ import org.springframework.stereotype.Controller
 @Controller
 @Path("/api/owner")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 class OwnerResource(private val ownerService: OwnerService) {
 
     @GET
     @Path("/{companyId}")
-    fun getAllOwners(companyId: Long): Response {
+    fun getAllOwners(@PathParam("companyId") companyId: Long): Response {
         val allOwners = ownerService.getAllOwners(companyId)
         return Response.ok(allOwners).build()
     }

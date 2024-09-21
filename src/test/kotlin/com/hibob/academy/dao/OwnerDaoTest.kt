@@ -28,10 +28,12 @@ class OwnerDaoTest @Autowired constructor(private val sql: DSLContext) {
     @Test
     fun `get all owners wen we got owners in the database`() {
         ownerDao.createOwnerIfNotExists(owner1)
-        val ownerId1 = ownerDao.getAllOwners(companyId)[0].id
-
         ownerDao.createOwnerIfNotExists(owner2)
-        val ownerId2 = ownerDao.getAllOwners(companyId)[1].id
+
+        val owners = ownerDao.getAllOwners(companyId)
+
+        val ownerId1 = owners[0].id
+        val ownerId2 = owners[1].id
 
         val expectedResult = listOf(
             OwnerData(ownerId1, owner1.name, owner1.companyId, owner1.employeeId),
@@ -53,7 +55,6 @@ class OwnerDaoTest @Autowired constructor(private val sql: DSLContext) {
         ownerDao.createOwnerIfNotExists(owner1)
         val ownerId = ownerDao.getAllOwners(companyId)[0].id
         val expectedResult = listOf(OwnerData(ownerId, owner1.name, owner1.companyId, owner1.employeeId))
-
 
         assertEquals(expectedResult, ownerDao.getAllOwners(companyId))
     }
