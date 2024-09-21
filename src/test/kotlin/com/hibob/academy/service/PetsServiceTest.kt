@@ -105,10 +105,11 @@ class PetsServiceTest {
     @Test
     fun `updateOwnerForPets should throw exception when petIds list is empty`() {
         val ownerId = 1L
+        val companyId = 1L
         val emptyList = emptyList<Long>()
 
-        val exception = assertThrows<IllegalArgumentException> {
-            petsService.updateOwnerForPets(ownerId, emptyList)
+        val exception = assertThrows<BadRequestException> {
+            petsService.updateOwnerForPets(ownerId, emptyList, companyId)
         }
 
         assertEquals("petIds cannot be empty", exception.message )
@@ -117,12 +118,13 @@ class PetsServiceTest {
     @Test
     fun `updateOwnerForPets should throw exception when no pets were updated`() {
         val ownerId = 1L
+        val companyId = 1L
         val petsId = listOf(1L, 2L, 3L)
 
-        whenever(petDao.updateOwnerForPets(ownerId, petsId)).thenReturn(0)
+        whenever(petDao.updateOwnerForPets(ownerId, petsId, companyId)).thenReturn(0)
 
-        val exception = assertThrows<IllegalArgumentException> {
-            petsService.updateOwnerForPets(ownerId, petsId)
+        val exception = assertThrows<BadRequestException> {
+            petsService.updateOwnerForPets(ownerId, petsId, companyId)
         }
 
         assertEquals("No pets were updated, please check the provided ownerId and petIds", exception.message )
@@ -132,7 +134,7 @@ class PetsServiceTest {
     fun `insertMultiplePets should throw exception when pet list is empty`() {
         val emptyList = emptyList<PetDataInsert>()
 
-        val exception = assertThrows<IllegalArgumentException> {
+        val exception = assertThrows<BadRequestException> {
             petsService.insertMultiplePets(emptyList)
         }
 
@@ -148,7 +150,7 @@ class PetsServiceTest {
 
         whenever(petDao.insertMultiplePets(pets)).thenReturn(0)
 
-        val exception = assertThrows<IllegalArgumentException> {
+        val exception = assertThrows<BadRequestException> {
             petsService.insertMultiplePets(pets)
         }
         assertEquals("No pets were inserted, please check the provided data", exception.message )

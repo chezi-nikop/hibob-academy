@@ -31,9 +31,9 @@ class PetsService(private val petDao: PetsDao) {
         return petDao.countPetsByType(companyId)
     }
 
-    fun updateOwnerForPets(ownerId: Long, petIds: List<Long>) {
+    fun updateOwnerForPets(ownerId: Long, petIds: List<Long>, companyId: Long) {
         if (petIds.isEmpty()) throw BadRequestException("petIds cannot be empty")
-        val checkUpDate = petDao.updateOwnerForPets(ownerId, petIds)
+        val checkUpDate = petDao.updateOwnerForPets(ownerId, petIds, companyId)
         if (checkUpDate.equals(0)) throw BadRequestException("No pets were updated, please check the provided ownerId and petIds")
     }
 
