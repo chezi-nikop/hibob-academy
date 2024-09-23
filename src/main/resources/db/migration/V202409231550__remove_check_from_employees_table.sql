@@ -1,6 +1,0 @@
-ALTER TABLE employees
-DROP COLUMN role;
-
-ALTER TABLE employees
-ADD COLUMN role VARCHAR(50) NOT NULL;
-
