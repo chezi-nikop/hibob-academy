@@ -1,2 +1,2 @@
 ALTER TABLE feedback
-DROP COLUMN is_anonymous;
+DROP COLUMN if exists is_anonymous;
