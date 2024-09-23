@@ -18,7 +18,44 @@ data class FeedbackOut(
     val date: LocalDate
 )
 
+data class EmployeeIn(
+    val firstName: String,
+    val lastName: String,
+    val role: RoleType,
+    val companyId: Long,
+)
+
+data class EmployeeOut(
+    val id: Long,
+    val firstName: String,
+    val lastName: String,
+    val role: RoleType,
+    val companyId: Long,
+)
+
+enum class RoleType {
+    ADMIN,
+    MANAGER,
+    EMPLOYEE;
+
+    companion object {
+        fun enumToString(role: RoleType): String =
+            role.toString()
+
+        fun stringToEnum(string: String): RoleType =
+            valueOf(string.uppercase())
+    }
+}
+
 enum class FeedbackStatus {
     REVIEWED,
-    UNREVIEWED
+    UNREVIEWED;
+
+    companion object {
+        fun enumToString(status: FeedbackStatus): String =
+            status.toString()
+
+        fun stringToEnum(string: String): FeedbackStatus =
+            valueOf(string.uppercase())
+    }
 }
