@@ -39,7 +39,6 @@ VALUES ('Jerry', 'Seinfeld', 'ADMIN', 2),
        ('Uncle', 'Leo', 'EMPLOYEE', 2),
        ('Babu', 'Bhatt', 'EMPLOYEE', 2);
 
-
 -- Insert employees for Friends company (id=1, role=hr)
 INSERT INTO employees (first_name, last_name, role, company_id)
 VALUES ('Liam', 'Smith', 'HR', 1),
