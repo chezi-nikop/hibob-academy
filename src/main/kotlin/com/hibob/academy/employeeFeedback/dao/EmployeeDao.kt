@@ -21,11 +21,21 @@ class EmployeeDao(private val sql: DSLContext) {
     }
 
     fun getEmployee(employee: EmployeeIn) : EmployeeOut {
-        return sql.select(employeeTable.id, employeeTable.firstName, employeeTable.lastName, employeeTable.rol, employeeTable.companyId)
+        return sql.select(employeeTable)
             .from(employeeTable)
             .where(employeeTable.firstName.eq(employee.firstName))
             .and(employeeTable.lastName.eq(employee.lastName))
             .and(employeeTable.companyId.eq(employee.companyId))
             .fetchOne(employeeMapper) ?: throw RuntimeException("Failed to fetch employee")
+    }
+
+    fun addEmployee(employee: EmployeeOut) {
+        sql.insertInto(employeeTable)
+            .set(employeeTable.id, employee.id)
+            .set(employeeTable.firstName, employee.firstName)
+            .set(employeeTable.lastName, employee.lastName)
+            .set(employeeTable.rol, RoleType.enumToString(employee.role))
+            .set(employeeTable.companyId, employee.companyId)
+            .execute()
     }
 }

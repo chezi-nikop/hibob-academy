@@ -6,11 +6,12 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
+import kotlin.random.Random
 
 @BobDbTest
 class EmployeeDaoTest @Autowired constructor(private val sql: DSLContext) {
     private val employeeDao = EmployeeDao(sql)
-    private val companyId1 = 1L
+    private val companyId1 = Random.nextLong()
 
     @Test
     fun `should throw exception when employee does not exist`() {
@@ -28,16 +29,18 @@ class EmployeeDaoTest @Autowired constructor(private val sql: DSLContext) {
 
     @Test
     fun `should return employee when exists`() {
-        val employee = EmployeeIn(
+        val employee = EmployeeOut(
+            id = Random.nextLong(),
             firstName = "Rachel",
             lastName = "Green",
-            companyId = 1L,
+            role = RoleType.ADMIN,
+            companyId = companyId1,
         )
 
-        val returnEmployee = employeeDao.getEmployee(employee)
+        employeeDao.addEmployee(employee)
 
-        val expectedEmployee = EmployeeOut(returnEmployee.id, employee.firstName, employee.lastName, returnEmployee.role, employee.companyId )
+        val returnEmployee = employeeDao.getEmployee(EmployeeIn(employee.firstName, employee.lastName, employee.companyId))
 
-        assertEquals(expectedEmployee, returnEmployee)
+        assertEquals(employee, returnEmployee)
     }
 }
