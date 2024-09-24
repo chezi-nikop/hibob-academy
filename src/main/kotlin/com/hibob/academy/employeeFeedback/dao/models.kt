@@ -36,7 +36,8 @@ data class EmployeeOut(
 enum class RoleType {
     ADMIN,
     MANAGER,
-    EMPLOYEE;
+    EMPLOYEE,
+    HR;
 
     companion object {
         fun enumToString(role: RoleType): String =
