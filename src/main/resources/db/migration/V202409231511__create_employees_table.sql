@@ -7,4 +7,4 @@ CREATE TABLE IF NOT EXISTS employees
     company_id BIGINT REFERENCES company (id)
 );
 
-CREATE INDEX idx_company_id on employees (company_id);
+CREATE INDEX idx_first_name_last_name_company_id on employees (first_name, last_name, company_id);
