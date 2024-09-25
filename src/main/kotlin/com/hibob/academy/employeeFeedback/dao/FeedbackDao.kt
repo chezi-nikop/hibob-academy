@@ -34,14 +34,7 @@ class FeedbackDao(private val sql: DSLContext) {
     }
 
     fun getFeedbackById(id: Long, companyId: Long): FeedbackDataOut {
-        return sql.select(
-            feedbackTable.id,
-            feedbackTable.employeeId,
-            feedbackTable.content,
-            feedbackTable.status,
-            feedbackTable.companyId,
-            feedbackTable.date
-        )
+        return sql.select()
             .from(feedbackTable)
             .where(feedbackTable.id.eq(id))
             .and(feedbackTable.companyId.eq(companyId))

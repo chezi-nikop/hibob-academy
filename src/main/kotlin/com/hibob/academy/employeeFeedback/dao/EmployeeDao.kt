@@ -21,7 +21,7 @@ class EmployeeDao(private val sql: DSLContext) {
     }
 
     fun loginEmployee(employee: EmployeeDataForLogin): EmployeeDataForCookie {
-        val employeeForCookie = sql.select(employeeTable.id, employeeTable.role, employeeTable.companyId)
+        val employeeForCookie = sql.select()
             .from(employeeTable)
             .where(employeeTable.firstName.eq(employee.firstName))
             .and(employeeTable.lastName.eq(employee.lastName))
