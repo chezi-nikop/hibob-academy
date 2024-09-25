@@ -18,16 +18,21 @@ data class FeedbackOut(
     val date: LocalDate
 )
 
-data class EmployeeIn(
+data class EmployeeLogin(
     val firstName: String,
     val lastName: String,
     val companyId: Long,
 )
 
-data class EmployeeOut(
-    val id: Long,
+data class EmployeeIn(
     val firstName: String,
     val lastName: String,
+    val role: RoleType,
+    val companyId: Long,
+)
+
+data class EmployeeOut(
+    val id: Long,
     val role: RoleType,
     val companyId: Long,
 )
