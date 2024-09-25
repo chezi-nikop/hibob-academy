@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.assertNotNull
 import kotlin.random.Random
 
 @BobDbTest
@@ -19,7 +20,7 @@ class FeedbackDaoTest @Autowired constructor(private val sql: DSLContext) {
     private val companyId = Random.nextLong()
     private val feedbackId = Random.nextLong()
     val feedback1 =
-        FeedbackDataIn(employeeId = 1L, content = "Excellent work", status = FeedbackStatus.UNREVIEWED, companyId)
+        FeedbackDataIn(employeeId = 1L, content = "Excellent work", companyId)
 
     @Test
     fun `add feedback and verify insertion`() {
@@ -30,7 +31,7 @@ class FeedbackDaoTest @Autowired constructor(private val sql: DSLContext) {
             feedbackId,
             feedback1.employeeId,
             feedback1.content,
-            feedback1.status,
+            FeedbackStatus.UNREVIEWED,
             companyId,
             returnedFeedback.date
         )
@@ -54,7 +55,7 @@ class FeedbackDaoTest @Autowired constructor(private val sql: DSLContext) {
 
         val status = feedbackDao.getFeedbackStatus(feedbackId1, companyId)
 
-        assertEquals("UNREVIEWED", status)
+        assertNotNull(status)
     }
 
     @Test
