@@ -2,14 +2,14 @@ package com.hibob.academy.employeeFeedback.dao
 
 import java.time.LocalDate
 
-data class FeedbackIn(
+data class FeedbackDataIn(
     val employeeId: Long?,
     val content: String,
     val status: FeedbackStatus = FeedbackStatus.UNREVIEWED,
     val companyId: Long
 )
 
-data class FeedbackOut(
+data class FeedbackDataOut(
     val id: Long,
     val employeeId: Long?,
     val content: String,
@@ -18,16 +18,21 @@ data class FeedbackOut(
     val date: LocalDate
 )
 
-data class EmployeeIn(
+data class EmployeeDataForLogin(
     val firstName: String,
     val lastName: String,
     val companyId: Long,
 )
 
-data class EmployeeOut(
-    val id: Long,
+data class EmployeeUserDetails(
     val firstName: String,
     val lastName: String,
+    val role: RoleType,
+    val companyId: Long,
+)
+
+data class EmployeeDataForCookie(
+    val id: Long,
     val role: RoleType,
     val companyId: Long,
 )
