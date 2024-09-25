@@ -41,13 +41,14 @@ class FeedbackDao(private val sql: DSLContext) {
             .fetchOne(feedbackMapper) ?: throw NotFoundException("Failed to fetch feedback")
     }
 
-    fun getFeedbackStatus(id: Long, companyId: Long): String {
+    fun getFeedbackStatus(id: Long, employeeId: Long, companyId: Long): String {
         return sql.select(feedbackTable.status)
             .from(feedbackTable)
             .where(feedbackTable.id.eq(id))
             .and(feedbackTable.companyId.eq(companyId))
+            .and(feedbackTable.employeeId.eq(employeeId))
             .fetchOne(feedbackTable.status)
-            ?: throw NotFoundException("companyId or feedbackId does not exist in the system")
+            ?: throw NotFoundException("companyId or feedbackId or employeeId does not exist in the system")
     }
 
     fun deleteTable(companyId: Long) {
