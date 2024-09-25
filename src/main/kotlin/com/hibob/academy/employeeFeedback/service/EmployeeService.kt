@@ -1,8 +1,6 @@
 package com.hibob.academy.employeeFeedback.service
 
-import com.hibob.academy.employeeFeedback.dao.EmployeeDao
-import com.hibob.academy.employeeFeedback.dao.EmployeeIn
-import com.hibob.academy.employeeFeedback.dao.EmployeeOut
+import com.hibob.academy.employeeFeedback.dao.*
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import jakarta.ws.rs.core.NewCookie
@@ -16,7 +14,7 @@ class EmployeeService(private val employeeDao: EmployeeDao) {
         const val SECRET_KEY = "secjgfthgfth67ythgf657rtythfggfdfgdfasjdhsuytuytuyuttuuuutuytyuajfh3243hgasfssdfdfsdesrytftyr657ret"
     }
     val now = Date()
-    fun createJwtToken(employeeOut: EmployeeOut): String {
+    fun createJwtToken(employeeOut: EmployeeDataForCookie): String {
         return Jwts.builder().setHeaderParam("type", "JWT")
             .claim("id", employeeOut.id)
             .claim("company_id", employeeOut.companyId)
@@ -26,8 +24,8 @@ class EmployeeService(private val employeeDao: EmployeeDao) {
             .compact()
     }
 
-    fun loginEmployee(employeeIn: EmployeeIn): String {
-        val returnEmployee = employeeDao.loginEmployee(employeeIn)
+    fun loginEmployee(employee: EmployeeDataForLogin): String {
+        val returnEmployee = employeeDao.loginEmployee(employee)
 
         val newToken = createJwtToken(returnEmployee)
 
@@ -35,6 +33,6 @@ class EmployeeService(private val employeeDao: EmployeeDao) {
     }
 
     fun logOutEmployee(): NewCookie {
-        return NewCookie()
+        return NewCookie("token", "", "/", null, null, 0, false)
     }
 }
