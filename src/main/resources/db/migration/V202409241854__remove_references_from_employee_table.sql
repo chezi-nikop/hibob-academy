@@ -1,5 +1,2 @@
 ALTER TABLE employees
-DROP COLUMN IF EXISTS company_id;
-
-ALTER TABLE employees
-ADD COLUMN IF NOT EXISTS company_id BIGINT NOT NULL;
+ALTER COLUMN company_id SET NOT NULL;
