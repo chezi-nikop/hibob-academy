@@ -26,3 +26,12 @@ class EmployeeTable(tableName: String = "employees") : JooqTable(tableName) {
         val instance = EmployeeTable()
     }
 }
+
+class CompanyTable(tableName: String = "company") : JooqTable(tableName) {
+    val id = createBigIntField("id")
+    val name = createVarcharField("name")
+
+    companion object{
+        val instance = CompanyTable()
+    }
+}
