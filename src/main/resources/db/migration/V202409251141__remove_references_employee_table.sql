@@ -1,0 +1,2 @@
+ALTER TABLE employees
+DROP CONSTRAINT employees_company_id_fkey;
