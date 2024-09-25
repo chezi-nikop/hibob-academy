@@ -11,15 +11,18 @@ import java.util.*
 class EmployeeService(private val employeeDao: EmployeeDao) {
 
     companion object {
-        const val SECRET_KEY = "secjgfthgfth67ythgf657rtythfggfdfgdfasjdhsuytuytuyuttuuuutuytyuajfh3243hgasfssdfdfsdesrytftyr657ret"
+        const val SECRET_KEY =
+            "secjgfthgfth67ythgf657rtythfggfdfgdfasjdhsuytuytuyuttuuuutuytyuajfh3243hgasfssdfdfsdesrytftyr657ret"
     }
-    val now = Date()
+
     fun createJwtToken(employeeOut: EmployeeDataForCookie): String {
+        val now = Date()
+
         return Jwts.builder().setHeaderParam("type", "JWT")
             .claim("id", employeeOut.id)
             .claim("company_id", employeeOut.companyId)
             .claim("role", employeeOut.role)
-            .setExpiration(Date(now.time + (60 * 60 * 24)*1000))
+            .setExpiration(Date(now.time + (60 * 60 * 24) * 1000))
             .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
             .compact()
     }

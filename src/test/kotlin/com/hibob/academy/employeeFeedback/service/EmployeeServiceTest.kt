@@ -15,9 +15,8 @@ class EmployeeServiceTest {
     private val companyId = Random.nextLong()
     private val employeeId = Random.nextLong()
 
-
     @Test
-    fun `getEmployee should return a JWT token when employee exists`() {
+    fun `loginEmployee should return a JWT token when employee exists`() {
         val employeeIn = EmployeeDataForLogin(firstName = "chezi", lastName = "nikop", companyId = companyId)
         val employeeOut = EmployeeDataForCookie(employeeId, RoleType.ADMIN, companyId)
 
@@ -32,6 +31,8 @@ class EmployeeServiceTest {
 
         assertEquals(employeeOut.id, parsedClaims["id"])
         assertEquals(employeeOut.companyId, parsedClaims["company_id"])
-        assertEquals(employeeOut.role, parsedClaims["role"])
+        assertEquals(employeeOut.role, RoleType.valueOf(parsedClaims["role"] as String))
+
+        verify(employeeDao).loginEmployee(employeeIn)
     }
 }
