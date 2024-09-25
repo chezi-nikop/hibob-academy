@@ -19,7 +19,7 @@ class EmployeeTable(tableName: String = "employees") : JooqTable(tableName) {
     val id = createBigIntField("id")
     val firstName = createVarcharField("first_name")
     val lastName = createVarcharField("last_name")
-    val rol = createVarcharField("role")
+    val role = createVarcharField("role")
     val companyId = createBigIntField("company_id")
 
     companion object {

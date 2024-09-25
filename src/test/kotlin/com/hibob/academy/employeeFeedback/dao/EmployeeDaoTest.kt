@@ -1,6 +1,7 @@
 package com.hibob.academy.employeeFeedback.dao
 
 import com.hibob.academy.utils.BobDbTest
+import javassist.NotFoundException
 import org.jooq.DSLContext
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,7 +22,7 @@ class EmployeeDaoTest @Autowired constructor(private val sql: DSLContext) {
             companyId = companyId1
         )
 
-        val exception = assertThrows<RuntimeException> {
+        val exception = assertThrows<NotFoundException> {
             employeeDao.loginEmployee(nonExistentEmployee)
         }
         assertEquals("Failed to fetch employee", exception.message)
@@ -29,19 +30,23 @@ class EmployeeDaoTest @Autowired constructor(private val sql: DSLContext) {
 
     @Test
     fun `should return employee when exists`() {
+        val companyId = employeeDao.addCompany("company")
+
         val employee = EmployeeUserDetails(
             firstName = "chezi",
             lastName = "nikop",
             role = RoleType.ADMIN,
-            companyId = companyId1,
+            companyId = companyId,
         )
 
-        employeeDao.addEmployee(employee)
+        val employeeId = employeeDao.addEmployee(employee)
+
+        val expectedEmployee = EmployeeDataForCookie(employeeId, employee.role, employee.companyId)
 
         val returnEmployee =
             employeeDao.loginEmployee(EmployeeDataForLogin(employee.firstName, employee.lastName, employee.companyId))
 
-        assertEquals(employee, returnEmployee)
+        assertEquals(expectedEmployee, returnEmployee)
     }
 
     @BeforeEach
