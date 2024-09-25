@@ -17,14 +17,22 @@ class FeedbackDaoTest @Autowired constructor(private val sql: DSLContext) {
     private val feedbackDao = FeedbackDao(sql)
 
     private val companyId = Random.nextLong()
-    val feedback1 = FeedbackDataIn(employeeId = 1L, content = "Excellent work", status = FeedbackStatus.UNREVIEWED, companyId)
+    val feedback1 =
+        FeedbackDataIn(employeeId = 1L, content = "Excellent work", status = FeedbackStatus.UNREVIEWED, companyId)
 
     @Test
     fun `add feedback and verify insertion`() {
         val feedbackId = feedbackDao.addFeedback(feedback1)
         val returnedFeedback = feedbackDao.getFeedbackById(feedbackId, companyId)
 
-        val expectedResult = FeedbackDataOut(feedbackId, feedback1.employeeId, feedback1.content, feedback1.status, companyId, returnedFeedback.date)
+        val expectedResult = FeedbackDataOut(
+            feedbackId,
+            feedback1.employeeId,
+            feedback1.content,
+            feedback1.status,
+            companyId,
+            returnedFeedback.date
+        )
 
         assertEquals(expectedResult, returnedFeedback)
     }

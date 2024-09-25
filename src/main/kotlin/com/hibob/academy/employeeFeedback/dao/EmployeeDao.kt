@@ -20,8 +20,8 @@ class EmployeeDao(private val sql: DSLContext) {
         )
     }
 
-    fun loginEmployee(employee: EmployeeDataForLogin) : EmployeeDataForCookie {
-         val employeeForCookie = sql.select(employeeTable)
+    fun loginEmployee(employee: EmployeeDataForLogin): EmployeeDataForCookie {
+        val employeeForCookie = sql.select(employeeTable)
             .from(employeeTable)
             .where(employeeTable.firstName.eq(employee.firstName))
             .and(employeeTable.lastName.eq(employee.lastName))
@@ -39,27 +39,11 @@ class EmployeeDao(private val sql: DSLContext) {
             .returning(companyTable.id)
             .fetchOne()
         return employeeId?.get(employeeTable.id) ?: throw NotFoundException("Failed to insert company")
-
-
-    }
-
-    fun addCompany(name: String): Long {
-        val companyId = sql.insertInto(companyTable)
-            .set(companyTable.name, name)
-            .returning(companyTable.id)
-            .fetchOne()
-        return companyId?.get(companyTable.id) ?: throw NotFoundException("Failed to insert company")
     }
 
     fun deleteTableEmployee(companyId: Long) {
         sql.deleteFrom(employeeTable)
             .where(employeeTable.companyId.eq(companyId))
-            .execute()
-    }
-
-    fun deleteTableCompany(companyId: Long) {
-        sql.deleteFrom(companyTable)
-            .where(companyTable.id.eq(companyId))
             .execute()
     }
 }

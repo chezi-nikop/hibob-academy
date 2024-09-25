@@ -38,8 +38,15 @@ class EmployeeDaoTest @Autowired constructor(private val sql: DSLContext) {
 
         employeeDao.addEmployee(employee)
 
-        val returnEmployee = employeeDao.loginEmployee(EmployeeDataForLogin(employee.firstName, employee.lastName, employee.companyId))
+        val returnEmployee =
+            employeeDao.loginEmployee(EmployeeDataForLogin(employee.firstName, employee.lastName, employee.companyId))
 
         assertEquals(employee, returnEmployee)
+    }
+
+    @BeforeEach
+    @AfterEach
+    fun clearTable() {
+        employeeDao.deleteTableEmployee(companyId1)
     }
 }

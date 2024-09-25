@@ -34,7 +34,14 @@ class FeedbackDao(private val sql: DSLContext) {
     }
 
     fun getFeedbackById(id: Long, companyId: Long): FeedbackDataOut {
-        return sql.select(feedbackTable.id, feedbackTable.employeeId, feedbackTable.content, feedbackTable.status, feedbackTable.companyId, feedbackTable.date)
+        return sql.select(
+            feedbackTable.id,
+            feedbackTable.employeeId,
+            feedbackTable.content,
+            feedbackTable.status,
+            feedbackTable.companyId,
+            feedbackTable.date
+        )
             .from(feedbackTable)
             .where(feedbackTable.id.eq(id))
             .and(feedbackTable.companyId.eq(companyId))
@@ -46,7 +53,8 @@ class FeedbackDao(private val sql: DSLContext) {
             .from(feedbackTable)
             .where(feedbackTable.id.eq(id))
             .and(feedbackTable.companyId.eq(companyId))
-            .fetchOne(feedbackTable.status) ?: throw NotFoundException("companyId or feedbackId does not exist in the system")
+            .fetchOne(feedbackTable.status)
+            ?: throw NotFoundException("companyId or feedbackId does not exist in the system")
     }
 
     fun deleteTable(companyId: Long) {
