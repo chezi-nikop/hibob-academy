@@ -5,20 +5,25 @@ import org.mockito.kotlin.*
 import com.hibob.academy.employeeFeedback.dao.*
 import io.jsonwebtoken.Jwts
 import org.junit.jupiter.api.Assertions.*
+import kotlin.random.Random
 
 
 class EmployeeServiceTest {
     private val employeeDao = mock<EmployeeDao>()
     private val employeeService = EmployeeService(employeeDao)
 
+    private val companyId = Random.nextLong()
+    private val employeeId = Random.nextLong()
+
+
     @Test
     fun `getEmployee should return a JWT token when employee exists`() {
-        val employeeIn = EmployeeIn(firstName = "chezi", lastName = "nikop", companyId = 1L)
-        val employeeOut = EmployeeOut(id = 1L, employeeIn.firstName,employeeIn.lastName, role = RoleType.ADMIN, employeeIn.companyId)
+        val employeeIn = EmployeeDataForLogin(firstName = "chezi", lastName = "nikop", companyId = companyId)
+        val employeeOut = EmployeeDataForCookie(employeeId, RoleType.ADMIN, companyId)
 
-        whenever(employeeDao.getEmployee(employeeIn)).thenReturn(employeeOut)
+        whenever(employeeDao.loginEmployee(employeeIn)).thenReturn(employeeOut)
 
-        val returnEmployee = employeeService.getEmployee(employeeIn)
+        val returnEmployee = employeeService.loginEmployee(employeeIn)
 
         val parsedClaims = Jwts.parser()
             .setSigningKey(EmployeeService.SECRET_KEY)
