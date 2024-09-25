@@ -11,34 +11,36 @@ class EmployeeDao(private val sql: DSLContext) {
     private val employeeTable = EmployeeTable.instance
     private val companyTable = CompanyTable.instance
 
-    private val employeeMapper = RecordMapper<Record, EmployeeOut>
+    private val employeeMapper = RecordMapper<Record, EmployeeDataForCookie>
     { record ->
-        EmployeeOut(
+        EmployeeDataForCookie(
             record[employeeTable.id],
-            record[employeeTable.firstName],
-            record[employeeTable.lastName],
             RoleType.stringToEnum(record[employeeTable.rol]),
             record[employeeTable.companyId]
         )
     }
 
-    fun getEmployee(employee: EmployeeIn) : EmployeeOut {
-        return sql.select(employeeTable)
+    fun loginEmployee(employee: EmployeeDataForLogin) : EmployeeDataForCookie {
+         val employeeForCookie = sql.select(employeeTable)
             .from(employeeTable)
             .where(employeeTable.firstName.eq(employee.firstName))
             .and(employeeTable.lastName.eq(employee.lastName))
             .and(employeeTable.companyId.eq(employee.companyId))
-            .fetchOne(employeeMapper) ?: throw RuntimeException("Failed to fetch employee")
+            .fetchOne(employeeMapper)
+        return employeeForCookie ?: throw RuntimeException("Failed to fetch employee")
     }
 
-    fun addEmployee(employee: EmployeeOut) {
-        sql.insertInto(employeeTable)
-            .set(employeeTable.id, employee.id)
+    fun addEmployee(employee: EmployeeUserDetails): Long {
+        val employeeId = sql.insertInto(employeeTable)
             .set(employeeTable.firstName, employee.firstName)
             .set(employeeTable.lastName, employee.lastName)
             .set(employeeTable.rol, RoleType.enumToString(employee.role))
             .set(employeeTable.companyId, employee.companyId)
-            .execute()
+            .returning(companyTable.id)
+            .fetchOne()
+        return employeeId?.get(employeeTable.id) ?: throw NotFoundException("Failed to insert company")
+
+
     }
 
     fun addCompany(name: String): Long {

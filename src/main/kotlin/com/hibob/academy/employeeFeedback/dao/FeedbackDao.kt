@@ -1,6 +1,6 @@
 package com.hibob.academy.employeeFeedback.dao
 
-import javassist.NotFoundException
+import jakarta.ws.rs.NotFoundException
 import org.jooq.RecordMapper
 import org.jooq.DSLContext
 import org.jooq.Record
@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component
 class FeedbackDao(private val sql: DSLContext) {
     private val feedbackTable = FeedbackTable.instance
 
-    private val feedbackMapper = RecordMapper<Record, FeedbackOut>
+    private val feedbackMapper = RecordMapper<Record, FeedbackDataOut>
     { record ->
-        FeedbackOut(
+        FeedbackDataOut(
             record[feedbackTable.id],
             record[feedbackTable.employeeId],
             record[feedbackTable.content],
@@ -22,7 +22,7 @@ class FeedbackDao(private val sql: DSLContext) {
         )
     }
 
-    fun addFeedback(feedback: FeedbackIn): Long {
+    fun addFeedback(feedback: FeedbackDataIn): Long {
         val id = sql.insertInto(feedbackTable)
             .set(feedbackTable.employeeId, feedback.employeeId)
             .set(feedbackTable.content, feedback.content)
@@ -33,8 +33,8 @@ class FeedbackDao(private val sql: DSLContext) {
         return id?.get(feedbackTable.id) ?: throw NotFoundException("Failed to insert feedback")
     }
 
-    fun getFeedbackById(id: Long, companyId: Long): FeedbackOut {
-        return sql.select(feedbackTable)
+    fun getFeedbackById(id: Long, companyId: Long): FeedbackDataOut {
+        return sql.select(feedbackTable.id, feedbackTable.employeeId, feedbackTable.content, feedbackTable.status, feedbackTable.companyId, feedbackTable.date)
             .from(feedbackTable)
             .where(feedbackTable.id.eq(id))
             .and(feedbackTable.companyId.eq(companyId))

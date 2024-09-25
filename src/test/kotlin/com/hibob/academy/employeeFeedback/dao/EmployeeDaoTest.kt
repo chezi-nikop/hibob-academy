@@ -15,31 +15,30 @@ class EmployeeDaoTest @Autowired constructor(private val sql: DSLContext) {
 
     @Test
     fun `should throw exception when employee does not exist`() {
-        val nonExistentEmployee = EmployeeIn(
+        val nonExistentEmployee = EmployeeDataForLogin(
             firstName = "",
             lastName = "",
             companyId = companyId1
         )
 
         val exception = assertThrows<RuntimeException> {
-            employeeDao.getEmployee(nonExistentEmployee)
+            employeeDao.loginEmployee(nonExistentEmployee)
         }
         assertEquals("Failed to fetch employee", exception.message)
     }
 
     @Test
     fun `should return employee when exists`() {
-        val employee = EmployeeOut(
-            id = Random.nextLong(),
-            firstName = "Rachel",
-            lastName = "Green",
+        val employee = EmployeeUserDetails(
+            firstName = "chezi",
+            lastName = "nikop",
             role = RoleType.ADMIN,
             companyId = companyId1,
         )
 
         employeeDao.addEmployee(employee)
 
-        val returnEmployee = employeeDao.getEmployee(EmployeeIn(employee.firstName, employee.lastName, employee.companyId))
+        val returnEmployee = employeeDao.loginEmployee(EmployeeDataForLogin(employee.firstName, employee.lastName, employee.companyId))
 
         assertEquals(employee, returnEmployee)
     }
