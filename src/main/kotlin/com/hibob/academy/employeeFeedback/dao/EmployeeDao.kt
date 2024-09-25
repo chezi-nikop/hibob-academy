@@ -41,23 +41,18 @@ class EmployeeDao(private val sql: DSLContext) {
         return employeeId?.get(employeeTable.id) ?: throw NotFoundException("Failed to insert employee")
     }
 
-    fun deleteTableEmployee(companyId: Long) {
-        sql.deleteFrom(employeeTable)
-            .where(employeeTable.companyId.eq(companyId))
-            .execute()
-    }
-
     fun addCompany(name: String): Long {
         val companyId = sql.insertInto(companyTable)
             .set(companyTable.name, name)
             .returning(companyTable.id)
             .fetchOne()
+
         return companyId?.get(companyTable.id) ?: throw NotFoundException("Failed to insert company")
     }
 
-    fun deleteTableCompany(companyId: Long) {
-        sql.deleteFrom(companyTable)
-            .where(companyTable.id.eq(companyId))
+    fun deleteTableEmployee(companyId: Long) {
+        sql.deleteFrom(employeeTable)
+            .where(employeeTable.companyId.eq(companyId))
             .execute()
     }
 }
