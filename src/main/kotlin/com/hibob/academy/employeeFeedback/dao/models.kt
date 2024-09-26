@@ -5,7 +5,6 @@ import java.time.LocalDate
 data class FeedbackDataIn(
     val employeeId: Long?,
     val content: String,
-    val status: FeedbackStatus = FeedbackStatus.UNREVIEWED,
     val companyId: Long
 )
 
