@@ -19,8 +19,9 @@ class FeedbackDaoTest @Autowired constructor(private val sql: DSLContext) {
 
     private val companyId = Random.nextLong()
     private val feedbackId = Random.nextLong()
+    private val employeeId = Random.nextLong()
     val feedback1 =
-        FeedbackDataIn(employeeId = 1L, content = "Excellent work", companyId)
+        FeedbackDataIn(employeeId = employeeId, content = "Excellent work", companyId)
 
     @Test
     fun `add feedback and verify insertion`() {
@@ -53,7 +54,7 @@ class FeedbackDaoTest @Autowired constructor(private val sql: DSLContext) {
     fun `get feedback status when feedback exists`() {
         val feedbackId1 = feedbackDao.addFeedback(feedback1)
 
-        val status = feedbackDao.getFeedbackStatus(feedbackId1, companyId)
+        val status = feedbackDao.getFeedbackStatus(feedbackId1, employeeId, companyId)
 
         assertNotNull(status)
     }
@@ -61,9 +62,9 @@ class FeedbackDaoTest @Autowired constructor(private val sql: DSLContext) {
     @Test
     fun `get feedback status throws exception when feedback does not exist`() {
         val exception = assertThrows<NotFoundException> {
-            feedbackDao.getFeedbackStatus(feedbackId, companyId)
+            feedbackDao.getFeedbackStatus(feedbackId, employeeId, companyId)
         }
-        assertEquals("companyId or feedbackId does not exist in the system", exception.message)
+        assertEquals("feedbackId does not exist in the system", exception.message)
     }
 
     @BeforeEach
