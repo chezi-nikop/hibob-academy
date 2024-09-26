@@ -2,6 +2,11 @@ package com.hibob.academy.employeeFeedback.dao
 
 import java.time.LocalDate
 
+data class FeedbackDataInfo(
+    val isAnonymous: Boolean,
+    val content: String,
+)
+
 data class FeedbackDataIn(
     val employeeId: Long?,
     val content: String,
