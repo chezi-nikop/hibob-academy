@@ -69,3 +69,18 @@ enum class FeedbackStatus {
             valueOf(string.uppercase())
     }
 }
+
+data class ResponseDataIn(
+    val responseId: Long,
+    val feedbackId: Long,
+    val response: Long,
+    val content: String,
+)
+
+data class ResponseDataOut(
+    val id: Long,
+    val responseId: Long,
+    val feedbackId: Long,
+    val content: String,
+    val date: LocalDate,
+)
