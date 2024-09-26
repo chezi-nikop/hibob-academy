@@ -1,6 +1,6 @@
 package com.hibob.academy.employeeFeedback.filter
 
-import com.hibob.academy.service.SessionService.Companion.SECRET_KEY
+import com.hibob.academy.employeeFeedback.service.EmployeeService.Companion.SECRET_KEY
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import jakarta.ws.rs.container.ContainerRequestContext
