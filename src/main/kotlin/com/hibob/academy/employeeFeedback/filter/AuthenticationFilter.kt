@@ -1,5 +1,7 @@
 package com.hibob.academy.employeeFeedback.filter
 
+import com.hibob.academy.employeeFeedback.dao.EmployeeDataForCookie
+import com.hibob.academy.employeeFeedback.dao.RoleType
 import com.hibob.academy.employeeFeedback.service.EmployeeService.Companion.SECRET_KEY
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
@@ -15,6 +17,7 @@ class AuthenticationFilterEmployee : ContainerRequestFilter {
     companion object {
         private const val LOGIN_PATH = "api/employees/login"
         const val COOKIE_NAME = "employee_cookie"
+        const val ACTIVE_EMPLOYEE = "active_employee"
     }
 
     override fun filter(requestContext: ContainerRequestContext) {
@@ -26,9 +29,10 @@ class AuthenticationFilterEmployee : ContainerRequestFilter {
         val claims = verify(cookie, requestContext)
 
         claims?.let {
-            requestContext.setProperty("companyId", it["companyId"])
-            requestContext.setProperty("employeeId", it["employeeId"])
-            requestContext.setProperty("role", it["role"])
+            val companyId = it["companyId"] as Long
+            val employeeId = it["employeeId"] as Long
+            val role = it["role"] as RoleType
+            requestContext.setProperty("active_employee", EmployeeDataForCookie(employeeId, role, companyId))
         }
     }
 
