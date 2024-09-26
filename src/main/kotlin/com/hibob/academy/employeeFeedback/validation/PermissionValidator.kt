@@ -9,18 +9,17 @@ import org.springframework.stereotype.Component
 
 @Component
 class PermissionValidator {
-    companion object {
-        val permissionValidator = PermissionValidator()
-    }
+    object Permission {
 
-    fun getInfoFromCookie(requestContext: ContainerRequestContext): EmployeeDataForCookie {
-        val cookieInfo = requestContext.getProperty(ACTIVE_EMPLOYEE) as EmployeeDataForCookie
-        return cookieInfo
-    }
+        fun getInfoFromCookie(requestContext: ContainerRequestContext): EmployeeDataForCookie {
+            val cookieInfo = requestContext.getProperty(ACTIVE_EMPLOYEE) as EmployeeDataForCookie
+            return cookieInfo
+        }
 
-    fun checkPermission(@Context request: ContainerRequestContext): Boolean {
-        val activeEmployee = getInfoFromCookie(request)
+        fun checkPermission(@Context request: ContainerRequestContext): Boolean {
+            val activeEmployee = getInfoFromCookie(request)
 
-        return activeEmployee.role == RoleType.HR || activeEmployee.role == RoleType.ADMIN
+            return activeEmployee.role == RoleType.HR || activeEmployee.role == RoleType.ADMIN
+        }
     }
 }
