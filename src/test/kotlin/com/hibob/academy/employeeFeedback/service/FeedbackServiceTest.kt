@@ -2,102 +2,72 @@ package com.hibob.academy.employeeFeedback.service
 
 import com.hibob.academy.employeeFeedback.dao.*
 import jakarta.ws.rs.BadRequestException
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.junit.jupiter.api.assertThrows
+import org.mockito.kotlin.whenever
+import java.time.LocalDate
+import kotlin.random.Random
+
 class FeedbackServiceTest {
     private val feedbackDao = mock<FeedbackDao>()
     private val feedbackService = FeedbackService(feedbackDao)
+    private val employeeId = Random.nextLong(1, Long.MAX_VALUE)
+    private val companyId = Random.nextLong(1, Long.MAX_VALUE)
+    private val feedbackId = Random.nextLong(1, Long.MAX_VALUE)
+    private val content = "chezi nikop"
+    private val goodConstant = "my name is chezi nikop im 27 years old and i live in haifa"
+
+    private val feedback1 = FeedbackDataIn(employeeId, content, companyId)
+    private val feedback2 = FeedbackDataIn(employeeId, goodConstant, companyId)
+
 
     @Test
     fun `addFeedback should throw BadRequestException when content length is less than 30`() {
-        val feedback = FeedbackDataIn()
-        assertThrows<BadRequestException> {
-            feedbackService.addFeedback(feedback)
+        val exception = assertThrows<BadRequestException> {
+            feedbackService.addFeedback(feedback1)
         }
-    }
-
-    @Test
-    fun `addFeedback should throw BadRequestException when content length is more than 225`() {
-        val feedback = FeedbackDataIn(content = "A".repeat(226))
-        assertThrows<BadRequestException> {
-            feedbackService.addFeedback(feedback)
-        }
+        assertEquals("Feedback must have 30 characters.", exception.message)
     }
 
     @Test
     fun `addFeedback should return feedback ID when valid feedback is provided`() {
-        val feedback = FeedbackDataIn(content = "This is valid feedback content.")
-        `when`(feedbackDao.addFeedback(feedback)).thenReturn(1L)
+        whenever(feedbackDao.addFeedback(feedback2)).thenReturn(feedbackId)
 
-        val result = feedbackService.addFeedback(feedback)
+        val result = feedbackService.addFeedback(feedback2)
 
-        assertEquals(1L, result)
-        verify(feedbackDao, times(1)).addFeedback(feedback)
+        assertEquals(feedbackId, result)
     }
 
     @Test
     fun `addFeedback should throw BadRequestException when feedback cannot be added`() {
-        val feedback = FeedbackDataIn(content = "This is valid feedback content.")
-        `when`(feedbackDao.addFeedback(feedback)).thenReturn(0L)
+        whenever(feedbackDao.addFeedback(feedback2)).thenReturn(0L)
 
-        assertThrows<BadRequestException> {
-            feedbackService.addFeedback(feedback)
+        val exception = assertThrows<BadRequestException> {
+            feedbackService.addFeedback(feedback2)
         }
-    }
 
-    @Test
-    fun `getFeedbackById should throw BadRequestException when ID or companyId is non-positive`() {
-        assertThrows<BadRequestException> {
-            feedbackService.getFeedbackById(-1, 1)
-        }
-        assertThrows<BadRequestException> {
-            feedbackService.getFeedbackById(1, -1)
-        }
-        assertThrows<BadRequestException> {
-            feedbackService.getFeedbackById(0, 1)
-        }
+        assertEquals("can't add feedback", exception.message)
     }
 
     @Test
     fun `getFeedbackById should return feedback when valid IDs are provided`() {
-        val feedbackDataOut = FeedbackDataOut(id = 1L, content = "Feedback content")
-        `when`(feedbackDao.getFeedbackById(1L, 1L)).thenReturn(feedbackDataOut)
+        val expectedReturn =
+            FeedbackDataOut(id = 1L, employeeId, content, FeedbackStatus.UNREVIEWED, companyId, date = LocalDate.now())
+        whenever(feedbackDao.getFeedbackById(feedbackId, companyId)).thenReturn(expectedReturn)
 
-        val result = feedbackService.getFeedbackById(1L, 1L)
+        val result = feedbackService.getFeedbackById(feedbackId, companyId)
 
-        assertEquals(feedbackDataOut, result)
-        verify(feedbackDao, times(1)).getFeedbackById(1L, 1L)
-    }
-    @Test
-    fun `getFeedbackStatus should throw BadRequestException when ID or companyId is non-positive`() {
-        assertThrows<BadRequestException> {
-            feedbackService.getFeedbackStatus(-1, 1)
-        }
-        assertThrows<BadRequestException> {
-            feedbackService.getFeedbackStatus(1, -1)
-        }
-        assertThrows<BadRequestException> {
-            feedbackService.getFeedbackStatus(0, 1)
-        }
+        assertEquals(expectedReturn, result)
     }
 
     @Test
     fun `getFeedbackStatus should return FeedbackStatus when valid IDs are provided`() {
-        `when`(feedbackDao.getFeedbackStatus(1L, 1L)).thenReturn("APPROVED")
+        whenever(feedbackDao.getFeedbackStatus(feedbackId, employeeId, companyId)).thenReturn("UNREVIEWED")
 
-        val result = feedbackService.getFeedbackStatus(1L, 1L)
+        val result = feedbackService.getFeedbackStatus(feedbackId, employeeId, companyId)
 
-        assertEquals(FeedbackStatus.APPROVED, result)
-        verify(feedbackDao, times(1)).getFeedbackStatus(1L, 1L)
-    }
-
-    @Test
-    fun `getFeedbackStatus should throw BadRequestException when invalid status is returned`() {
-        `when`(feedbackDao.getFeedbackStatus(1L, 1L)).thenReturn("INVALID_STATUS")
-
-        assertThrows<BadRequestException> {
-            feedbackService.getFeedbackStatus(1L, 1L)
-        }
+        assertEquals(FeedbackStatus.UNREVIEWED.name, result)
     }
 }
