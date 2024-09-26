@@ -5,6 +5,7 @@ import com.hibob.academy.employeeFeedback.dao.RoleType
 import com.hibob.academy.employeeFeedback.service.EmployeeService.Companion.SECRET_KEY
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
+import jakarta.ws.rs.WebApplicationException
 import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.container.ContainerRequestFilter
 import jakarta.ws.rs.core.Response
@@ -29,9 +30,11 @@ class AuthenticationFilterEmployee : ContainerRequestFilter {
         val claims = verify(cookie, requestContext)
 
         claims?.let {
-            val companyId = it["companyId"] as Long
-            val employeeId = it["employeeId"] as Long
-            val role = it["role"] as RoleType
+            val companyId = (it["company_id"] as? Number)?.toLong()
+                ?: throw WebApplicationException("Company id not found", Response.Status.UNAUTHORIZED)
+            val employeeId = (it["id"] as? Number)?.toLong()
+                ?: throw WebApplicationException("Employee id not found", Response.Status.UNAUTHORIZED)
+            val role = RoleType.valueOf((it["role"] as String).uppercase())
             requestContext.setProperty("active_employee", EmployeeDataForCookie(employeeId, role, companyId))
         }
     }

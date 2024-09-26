@@ -5,23 +5,22 @@ import jakarta.ws.rs.core.Context
 import com.hibob.academy.employeeFeedback.dao.EmployeeDataForCookie
 import com.hibob.academy.employeeFeedback.dao.*
 import com.hibob.academy.employeeFeedback.filter.AuthenticationFilterEmployee.Companion.ACTIVE_EMPLOYEE
+import org.springframework.stereotype.Component
 
+@Component
 class PermissionValidator {
+    companion object {
+        val permissionValidator = PermissionValidator()
+    }
 
     fun getInfoFromCookie(requestContext: ContainerRequestContext): EmployeeDataForCookie {
         val cookieInfo = requestContext.getProperty(ACTIVE_EMPLOYEE) as EmployeeDataForCookie
         return cookieInfo
     }
 
-    fun getLoginCompanyId(@Context request: ContainerRequestContext): Long {
-        val activeEmployee = getActiveEmployee(request)
-        return activeEmployee.companyId
+    fun checkPermission(@Context request: ContainerRequestContext): Boolean {
+        val activeEmployee = getInfoFromCookie(request)
+
+        return activeEmployee.role == RoleType.HR || activeEmployee.role == RoleType.ADMIN
     }
-
-    fun getLoginRole(@Context request: ContainerRequestContext): RoleType {
-        val activeEmployee = getActiveEmployee(request)
-        return activeEmployee.role
-    }
-
-
 }
