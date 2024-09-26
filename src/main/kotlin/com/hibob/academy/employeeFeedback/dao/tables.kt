@@ -21,6 +21,7 @@ class EmployeeTable(tableName: String = "employees") : JooqTable(tableName) {
     val lastName = createVarcharField("last_name")
     val role = createVarcharField("role")
     val companyId = createBigIntField("company_id")
+    val department = createVarcharField("department")
 
     companion object {
         val instance = EmployeeTable()

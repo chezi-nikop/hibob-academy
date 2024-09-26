@@ -36,6 +36,7 @@ class EmployeeDao(private val sql: DSLContext) {
             .set(employeeTable.lastName, employee.lastName)
             .set(employeeTable.role, RoleType.enumToString(employee.role))
             .set(employeeTable.companyId, employee.companyId)
+            .set(employeeTable.department, employee.department)
             .returning(employeeTable.id)
             .fetchOne()
         return employeeId?.get(employeeTable.id) ?: throw NotFoundException("Failed to insert employee")

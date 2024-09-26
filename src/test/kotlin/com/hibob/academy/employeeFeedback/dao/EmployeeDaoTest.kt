@@ -37,6 +37,7 @@ class EmployeeDaoTest @Autowired constructor(private val sql: DSLContext) {
             lastName = "nikop",
             role = RoleType.ADMIN,
             companyId = companyId,
+            department = "developer"
         )
 
         val employeeId = employeeDao.addEmployee(employee)
