@@ -1,0 +1,2 @@
+ALTER TABLE employees
+ALTER COLUMN department SET NOT NULL
