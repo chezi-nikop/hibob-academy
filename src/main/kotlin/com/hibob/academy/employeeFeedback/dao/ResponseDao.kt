@@ -13,34 +13,37 @@ class ResponseDao(private val sql: DSLContext) {
     { record ->
         ResponseDataOut(
             record[responseTable.id],
-            record[responseTable.responseId],
+            record[responseTable.responderId],
             record[responseTable.feedbackId],
             record[responseTable.content],
+            record[responseTable.companyId],
             record[responseTable.date],
         )
     }
 
     fun addResponse(response: ResponseDataIn) : Long {
         val responseId = sql.insertInto(responseTable)
-            .set(responseTable.responseId, response.responseId)
+            .set(responseTable.responderId, response.responderId)
             .set(responseTable.feedbackId, response.feedbackId)
             .set(responseTable.content, response.content)
+            .set(responseTable.companyId, response.companyId)
             .returning(responseTable.id)
             .fetchOne()!!
         return responseId.get(responseTable.id)
     }
 
-    fun getResponse(feedbackId: Long) : List<ResponseDataOut> {
+    fun getResponse(feedbackId: Long, companyId: Long) : List<ResponseDataOut> {
         val responses = sql.select()
             .from(responseTable)
             .where(responseTable.feedbackId.eq(feedbackId))
+            .and(responseTable.companyId.eq(companyId))
             .fetch(responseMapper)
         return responses
     }
 
-    fun deleteTable(feedbackId: Long) {
+    fun deleteTable(companyId: Long) {
         sql.deleteFrom(responseTable)
-            .where(responseTable.feedbackId.eq(feedbackId))
+            .where(responseTable.companyId.eq(companyId))
             .execute()
     }
 }

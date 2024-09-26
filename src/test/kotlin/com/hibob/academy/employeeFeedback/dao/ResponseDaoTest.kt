@@ -13,21 +13,22 @@ import kotlin.random.Random
 class ResponseDaoTest @Autowired constructor(private val sql: DSLContext) {
     private val responseDao = ResponseDao(sql)
 
-    private val responserId = Random.nextLong(1, Long.MAX_VALUE)
+    private val responderId = Random.nextLong(1, Long.MAX_VALUE)
     private val feedbackId = Random.nextLong(1, Long.MAX_VALUE)
     private val content = "good response"
-    private val responseIn = ResponseDataIn(responserId, feedbackId, content)
+    private val companyId = Random.nextLong(1, Long.MAX_VALUE)
+    private val responseIn = ResponseDataIn(responderId, feedbackId, content, companyId )
 
     @Test
     fun `Submit new response`() {
         val responseId = responseDao.addResponse(responseIn)
         assertNotNull(responseId)
-        assertNotNull(responseDao.getResponse(responseId))
+        assertNotNull(responseDao.getResponse(responseId, companyId))
     }
 
     @BeforeEach
     @AfterEach
     fun clearTable() {
-        responseDao.deleteTable(feedbackId)
+        responseDao.deleteTable(companyId)
     }
 }
