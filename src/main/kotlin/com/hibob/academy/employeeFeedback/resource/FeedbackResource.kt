@@ -1,5 +1,6 @@
 package com.hibob.academy.employeeFeedback.resource
 
+import com.hibob.academy.employeeFeedback.dao.EmployeeDataForCookie
 import com.hibob.academy.employeeFeedback.dao.FeedbackDataIn
 import com.hibob.academy.employeeFeedback.dao.RoleType
 import com.hibob.academy.employeeFeedback.service.FeedbackService
@@ -25,7 +26,7 @@ class FeedbackResource(private val feedbackService: FeedbackService) {
             val feedBackId = feedbackService.addFeedback(FeedbackDataIn(null, content, employeeInfo.companyId))
             return Response.ok(feedBackId).build()
         }
-        val feedBackId = feedbackService.addFeedback(FeedbackDataIn(employeeInfo.employeeId, content, employeeInfo.companyId))
+        val feedBackId = feedbackService.addFeedback(FeedbackDataIn(employeeInfo.id, content, employeeInfo.companyId))
         return Response.ok(feedBackId).build()
     }
 
@@ -44,30 +45,24 @@ class FeedbackResource(private val feedbackService: FeedbackService) {
 
     @GET
     @Path("/status/{id}")
-    fun getFeedbackStatus(@PathParam("id") id: Long, @Context requestContext: ContainerRequestContext ): Response {
+    fun getFeedbackStatus(@PathParam("id") feedbackId: Long, @Context requestContext: ContainerRequestContext ): Response {
 
         val employeeInfo = getInfoFromCookie(requestContext)
 
-        val status = feedbackService.getFeedbackStatus(id, employeeInfo.employeeId, employeeInfo.companyId)
+        val status = feedbackService.getFeedbackStatus(feedbackId, employeeInfo.id, employeeInfo.companyId)
 
         return Response.ok(status).build()
     }
 
-    data class CookieData(val companyId: Long, val employeeId: Long, val role: String)
-
-    fun confirmationId(employIdCookie: Long, employeeIdFeedback: Long) : Boolean {
-        return employIdCookie == employeeIdFeedback
+    fun confirmationRole(roleCookie: RoleType) : Boolean {
+        return roleCookie == RoleType.HR || roleCookie == RoleType.ADMIN
     }
 
-    fun confirmationRole(roleCookie: String) : Boolean {
-        return RoleType.stringToEnum(roleCookie) == RoleType.HR || RoleType.stringToEnum(roleCookie) == RoleType.ADMIN
-    }
-
-    fun getInfoFromCookie(requestContext: ContainerRequestContext): CookieData {
+    fun getInfoFromCookie(requestContext: ContainerRequestContext): EmployeeDataForCookie {
         val companyId = requestContext.getProperty("companyId") as Long
         val employeeId = requestContext.getProperty("employeeId") as Long
-        val role = requestContext.getProperty("role") as String
+        val role = requestContext.getProperty("role") as RoleType
 
-        return CookieData(companyId, employeeId, role)
+        return EmployeeDataForCookie(employeeId, role, companyId)
     }
 }
