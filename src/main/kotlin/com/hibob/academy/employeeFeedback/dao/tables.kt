@@ -39,9 +39,10 @@ class CompanyTable(tableName: String = "company") : JooqTable(tableName) {
 
 class ResponseTable(tableName: String = "response") : JooqTable(tableName) {
     val id = createBigIntField("id")
-    val responseId = createBigIntField("response_id")
+    val responderId = createBigIntField("responder_id")
     val feedbackId = createBigIntField("feedback_id")
     val content = createVarcharField("content")
+    val companyId = createBigIntField("company_id")
     val date = createLocalDateField("date")
 
     companion object {
