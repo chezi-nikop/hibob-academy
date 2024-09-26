@@ -41,17 +41,6 @@ class FeedbackServiceTest {
     }
 
     @Test
-    fun `addFeedback should throw BadRequestException when feedback cannot be added`() {
-        whenever(feedbackDao.addFeedback(feedback2)).thenReturn(0L)
-
-        val exception = assertThrows<BadRequestException> {
-            feedbackService.addFeedback(feedback2)
-        }
-
-        assertEquals("can't add feedback", exception.message)
-    }
-
-    @Test
     fun `getFeedbackById should return feedback when valid IDs are provided`() {
         val expectedReturn =
             FeedbackDataOut(id = 1L, employeeId, content, FeedbackStatus.UNREVIEWED, companyId, date = LocalDate.now())

@@ -12,8 +12,7 @@ class FeedbackService(private val feedbackDao: FeedbackDao) {
         if (feedback.content.length < minContent) throw BadRequestException("Feedback must have 30 characters.")
 
         val checkAdding = feedbackDao.addFeedback(feedback)
-        if (checkAdding > 0) return checkAdding
-        throw BadRequestException("can't add feedback")
+        return checkAdding
     }
 
     fun getFeedbackById(feedbackId: Long, companyId: Long): FeedbackDataOut {
