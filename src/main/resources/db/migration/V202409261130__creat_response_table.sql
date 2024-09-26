@@ -1,4 +1,4 @@
-CREATE TABLE response
+CREATE TABLE if not exists response
 (
     id         BIGSERIAL PRIMARY KEY,
     response_id BIGINT NOT NULL,
