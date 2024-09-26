@@ -28,6 +28,7 @@ data class EmployeeUserDetails(
     val lastName: String,
     val role: RoleType,
     val companyId: Long,
+    val department: String,
 )
 
 data class EmployeeDataForCookie(
