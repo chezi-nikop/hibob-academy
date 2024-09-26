@@ -10,22 +10,21 @@ import jakarta.ws.rs.BadRequestException
 @Component
 class ResponseService(private val responseDao: ResponseDao, private val feedbackDao: FeedbackDao) {
 
-    fun addResponse(response: ResponseDataIn, companyId: Long) : Long {
-        val check = checkFeedbackIdEmployeeId(response.feedbackId, companyId, response.responseId)
-        val id = responseDao.addResponse(response)
-        return id
+    fun addResponse(response: ResponseDataIn): Long {
+        checkFeedbackIdEmployeeId(response)
+        return responseDao.addResponse(response)
     }
 
-    fun getResponse(id: Long) : List<ResponseDataOut> {
-        if (id <= 0) throw BadRequestException("ID must be greater than or equal to zero")
-        return responseDao.getResponse(id)
+    fun getResponse(feedbackId: Long, companyId: Long): List<ResponseDataOut> {
+        if (feedbackId <= 0) throw BadRequestException("ID must be greater than or equal to zero")
+        return responseDao.getResponse(feedbackId, companyId)
     }
 
-    fun checkFeedbackIdEmployeeId(feedbackId: Long, companyId: Long, responseId: Long) : Boolean {
-        val feedbackInfo = feedbackDao.getFeedbackById(feedbackId, companyId)
+    fun checkFeedbackIdEmployeeId(response: ResponseDataIn) {
+        val feedbackInfo = feedbackDao.getFeedbackById(response.feedbackId, response.companyId)
 
-        if ( feedbackInfo.employeeId == responseId) throw NoSuchMethodError("You can't give a response to yourself")
+        if (feedbackInfo.employeeId == null) throw NoSuchMethodError("You can't give a response to anonymous")
 
-        return true
+        if (feedbackInfo.employeeId == response.responderId) throw NoSuchMethodError("You can't give a response to yourself")
     }
 }
