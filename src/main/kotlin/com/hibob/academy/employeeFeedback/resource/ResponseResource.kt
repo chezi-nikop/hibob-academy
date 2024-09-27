@@ -1,13 +1,17 @@
 package com.hibob.academy.employeeFeedback.resource
 
+import com.hibob.academy.employeeFeedback.dao.ResponseDataIn
 import com.hibob.academy.employeeFeedback.dao.ResponseDataInfo
 import jakarta.ws.rs.*
 import jakarta.ws.rs.core.MediaType
 import org.springframework.stereotype.Controller
 import com.hibob.academy.employeeFeedback.service.ResponseService
+import com.hibob.academy.employeeFeedback.validation.PermissionValidator
 import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.Response
+import org.springframework.http.HttpStatus
+import org.springframework.web.server.ResponseStatusException
 
 @Controller
 @Path("/api/response")
@@ -17,18 +21,27 @@ class ResponseResource(private val responseService: ResponseService) {
 
     @POST
     fun addResponse(response: ResponseDataInfo, @Context requestContext: ContainerRequestContext) : Response {
-        //נוציא את המידע הנדרש
-        //נרצה לבדוק האם הוא רשאי להגיב
-        //נשלח את הפרמטרים הנדרשים
-        return Response.ok().build()
+        val responderPermission = PermissionValidator.Permission.checkPermission(requestContext)
+        if (!responderPermission) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to access this resource")
+        }
+
+        val responderInfo = PermissionValidator.Permission.getInfoFromCookie(requestContext)
+        val responseId = responseService.addResponse(ResponseDataIn(responderInfo.id, response.feedbackId, response.content, responderInfo.companyId))
+
+        return Response.ok(responseId).build()
     }
 
     @GET
-    @Path("/response/{feedbackId}/{companyId}")
+    @Path("/{feedbackId}")
     fun getResponse(@PathParam("feedbackId") feedbackId: Long, @Context requestContext: ContainerRequestContext): Response {
-        //נוציא את המידע הנדרש
-        //נשלח את הפרמטרים הנדרשים
-        //נבדוק האם הוא זה כתב תגובה או רשאי לקרוא תגובות
-        return Response.ok().build()
+        val employeeInfo = PermissionValidator.Permission.getInfoFromCookie(requestContext)
+        val response = responseService.getResponse(feedbackId, employeeInfo.companyId)
+
+        val seeResponsePermission = PermissionValidator.Permission.getResponsePermission(response, requestContext)
+        if (!seeResponsePermission) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to access this resource")
+        }
+        return Response.ok(response).build()
     }
 }
