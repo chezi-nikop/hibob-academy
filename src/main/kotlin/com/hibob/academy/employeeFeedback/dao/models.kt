@@ -48,9 +48,10 @@ data class UpdateStatus(
 )
 
 data class FeedbackFilter(
-    val date: LocalDate,
-    val department: String,
-    val isAnonymous: Boolean
+    val startDate: LocalDate? = null,
+    val endDate: LocalDate? = null,
+    val department: String? = null,
+    val isAnonymous: Boolean? = null,
 )
 
 enum class RoleType {

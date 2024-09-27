@@ -6,6 +6,7 @@ import org.jooq.RecordMapper
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 
 @Component
 class FeedbackDao(private val sql: DSLContext) {
@@ -61,32 +62,32 @@ class FeedbackDao(private val sql: DSLContext) {
             .execute()
     }
 
-    fun getAllFeedbacks(companyId: Long): List<FeedbackDataOut> {
-        return sql.select()
-            .where(feedbackTable.companyId.eq(companyId))
-            .fetch(feedbackMapper)
-    }
-
     fun getFeedbackByFilter(filter: FeedbackFilter, companyId: Long): List<FeedbackDataOut> {
         return sql.select()
             .from(feedbackTable)
             .leftJoin(employeeTable).on(feedbackTable.employeeId.eq(employeeTable.id))
             .where(buildConditions(filter, companyId))
             .fetch(feedbackMapper)
-            ?: throw NotFoundException("No feedbacks match the provided filter")
     }
 
-    // פונקציה שבונה את תנאי השאילתה בצורה מודולרית ופונקציונלית
     private fun buildConditions(filter: FeedbackFilter, companyId: Long): Condition {
         return listOfNotNull(
-            feedbackTable.companyId.eq(companyId),  // תנאי חובה
-            filter.department?.let { employeeTable.department.eq(it) },  // סינון לפי מחלקה
-            filter.date?.let { feedbackTable.date.eq(it) },  // סינון לפי תאריך
-            filter.isAnonymous?.let { anonymousCondition(it) }  // סינון לפי אנונימיות
-        ).reduce(Condition::and)  // איחוד כל התנאים לתנאי אחד
+            feedbackTable.companyId.eq(companyId),
+            filter.department?.let { employeeTable.department.eq(it) },
+            buildDateCondition(filter.startDate, filter.endDate),  // סינון לפי טווח תאריכים
+            filter.isAnonymous?.let { anonymousCondition(it) }
+        ).reduce(Condition::and)
     }
 
-    // פונקציה שבודקת את תנאי האנונימיות ומחזירה את התנאי המתאים
+    private fun buildDateCondition(startDate: LocalDate?, endDate: LocalDate?): Condition? {
+        return when {
+            startDate != null && endDate != null -> feedbackTable.date.between(startDate, endDate)
+            startDate != null -> feedbackTable.date.greaterOrEqual(startDate)
+            endDate != null -> feedbackTable.date.lessOrEqual(endDate)
+            else -> null
+        }
+    }
+
     private fun anonymousCondition(isAnonymous: Boolean): Condition {
         return if (isAnonymous) feedbackTable.employeeId.isNull
         else feedbackTable.employeeId.isNotNull
