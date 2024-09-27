@@ -10,7 +10,7 @@ class FeedbackService(private val feedbackDao: FeedbackDao) {
 
     fun addFeedback(feedback: FeedbackDataIn): Long {
         val minContent = 30
-        if (feedback.content.length < minContent) throw NotAuthorizedException("Feedback must have 30 characters.")
+        if (feedback.content.length < minContent) throw BadRequestException("Feedback must have 30 characters.")
 
         val checkAdding = feedbackDao.addFeedback(feedback)
         return checkAdding
@@ -40,7 +40,7 @@ class FeedbackService(private val feedbackDao: FeedbackDao) {
 
     private fun validatePositiveIds(feedbackId: Long) {
         if (feedbackId <= 0) {
-            throw NotAuthorizedException("ID must be positive.")
+            throw BadRequestException("ID must be positive.")
         }
     }
 }

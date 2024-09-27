@@ -3,6 +3,7 @@ package com.hibob.academy.employeeFeedback.service
 import com.hibob.academy.employeeFeedback.dao.*
 import jakarta.ws.rs.BadRequestException
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.junit.jupiter.api.assertThrows
@@ -58,5 +59,64 @@ class FeedbackServiceTest {
         val result = feedbackService.getFeedbackStatus(feedbackId, employeeId, companyId)
 
         assertEquals(FeedbackStatus.UNREVIEWED.name, result)
+    }
+
+    @Test
+    fun `updateFeedbackStatus should return update count when valid IDs are provided`() {
+        val updateFeedback = UpdateStatus(feedbackId = feedbackId, status = FeedbackStatus.REVIEWED)
+        val expectedUpdateCount = 1
+        whenever(feedbackDao.updateFeedbackStatus(updateFeedback, companyId)).thenReturn(expectedUpdateCount)
+
+        val result = feedbackService.updateFeedbackStatus(updateFeedback, companyId)
+        assertEquals(expectedUpdateCount, result)
+    }
+
+    @Test
+    fun `updateFeedbackStatus should throw NotAuthorizedException when feedbackId is not positive`() {
+        val invalidFeedback = UpdateStatus(feedbackId = -1L, status = FeedbackStatus.REVIEWED)
+
+        val exception = assertThrows<BadRequestException> {
+            feedbackService.updateFeedbackStatus(invalidFeedback, companyId)
+        }
+        assertEquals("ID must be positive.", exception.message)
+    }
+
+    @Test
+    fun `getFeedbackByFilter should return list of feedbacks when valid filter is provided`() {
+        val filter = FeedbackFilter()
+        val expectedFeedbackList = listOf(
+            FeedbackDataOut(
+                id = Random.nextLong(1, Long.MAX_VALUE),
+                employeeId,
+                "Feedback 1",
+                FeedbackStatus.REVIEWED,
+                companyId,
+                date = LocalDate.now()
+            ),
+            FeedbackDataOut(
+                id = Random.nextLong(1, Long.MAX_VALUE),
+                employeeId,
+                "Feedback 2",
+                FeedbackStatus.REVIEWED,
+                companyId,
+                date = LocalDate.now()
+            )
+        )
+        whenever(feedbackDao.getFeedbackByFilter(filter, companyId)).thenReturn(expectedFeedbackList)
+
+        val result = feedbackService.getFeedbackByFilter(filter, companyId)
+
+        assertEquals(expectedFeedbackList, result)
+    }
+
+    @Test
+    fun `getFeedbackByFilter should return empty list when no feedbacks match the filter`() {
+
+        val filter = FeedbackFilter(department = "null")
+        whenever(feedbackDao.getFeedbackByFilter(filter, companyId)).thenReturn(emptyList())
+
+        val result = feedbackService.getFeedbackByFilter(filter, companyId)
+
+        assertTrue(result.isEmpty())
     }
 }
