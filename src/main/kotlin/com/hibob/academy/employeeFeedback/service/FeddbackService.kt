@@ -2,6 +2,7 @@ package com.hibob.academy.employeeFeedback.service
 
 import com.hibob.academy.employeeFeedback.dao.*
 import jakarta.ws.rs.BadRequestException
+import jakarta.ws.rs.NotAuthorizedException
 import org.springframework.stereotype.Component
 
 @Component
@@ -9,7 +10,7 @@ class FeedbackService(private val feedbackDao: FeedbackDao) {
 
     fun addFeedback(feedback: FeedbackDataIn): Long {
         val minContent = 30
-        if (feedback.content.length < minContent) throw BadRequestException("Feedback must have 30 characters.")
+        if (feedback.content.length < minContent) throw NotAuthorizedException("Feedback must have 30 characters.")
 
         val checkAdding = feedbackDao.addFeedback(feedback)
         return checkAdding
@@ -27,9 +28,19 @@ class FeedbackService(private val feedbackDao: FeedbackDao) {
         return returnedStatus
     }
 
+    fun updateFeedbackStatus(updateFeedback: UpdateStatus, companyId: Long): Int {
+        validatePositiveIds(updateFeedback.feedbackId)
+        val updateStatus = feedbackDao.updateFeedbackStatus(updateFeedback, companyId)
+        return updateStatus
+    }
+
+    fun getFeedbackByFilter(filter: FeedbackFilter, companyId: Long): List<FeedbackDataOut> {
+        return feedbackDao.getFeedbackByFilter(filter, companyId)
+    }
+
     private fun validatePositiveIds(feedbackId: Long) {
         if (feedbackId <= 0) {
-            throw BadRequestException("ID must be positive.")
+            throw NotAuthorizedException("ID must be positive.")
         }
     }
 }
