@@ -2,6 +2,8 @@ package com.hibob.academy.employeeFeedback.resource
 
 import com.hibob.academy.employeeFeedback.dao.FeedbackDataIn
 import com.hibob.academy.employeeFeedback.dao.FeedbackDataInfo
+import com.hibob.academy.employeeFeedback.dao.FeedbackFilter
+import com.hibob.academy.employeeFeedback.dao.UpdateStatus
 import com.hibob.academy.employeeFeedback.service.FeedbackService
 import com.hibob.academy.employeeFeedback.validation.PermissionValidator
 import jakarta.ws.rs.*
@@ -57,5 +59,21 @@ class FeedbackResource(private val feedbackService: FeedbackService) {
         val status = feedbackService.getFeedbackStatus(feedbackId, employeeInfo.id, employeeInfo.companyId)
 
         return Response.ok(status).build()
+    }
+
+    @PUT
+    @Path("/update/status")
+    fun updateFeedbackStatus(updateFeedback: UpdateStatus, @Context requestContext: ContainerRequestContext): Response {
+        //בדיקה האם הוא רשאי לעדכן
+        //עדכון
+        return Response.ok(updateFeedback.status).build()
+    }
+
+    @GET
+    @Path("/view")
+    fun getFeedbackByFilter(filter: FeedbackFilter, @Context requestContext: ContainerRequestContext): Response {
+        //בדיקה האם אני רשאי
+        //קריאה לקבל את הנתונים
+        return Response.ok().build()
     }
 }
