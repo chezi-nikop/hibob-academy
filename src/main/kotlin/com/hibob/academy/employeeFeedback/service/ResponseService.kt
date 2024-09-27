@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component
 import com.hibob.academy.employeeFeedback.dao.FeedbackDao
 import com.hibob.academy.employeeFeedback.dao.ResponseDataOut
 import jakarta.ws.rs.BadRequestException
+import jakarta.ws.rs.ForbiddenException
 
 @Component
 class ResponseService(private val responseDao: ResponseDao, private val feedbackDao: FeedbackDao) {
@@ -23,8 +24,12 @@ class ResponseService(private val responseDao: ResponseDao, private val feedback
     fun checkFeedbackIdEmployeeId(response: ResponseDataIn) {
         val feedbackInfo = feedbackDao.getFeedbackById(response.feedbackId, response.companyId)
 
-        if (feedbackInfo.employeeId == null) throw NoSuchMethodError("You can't give a response to anonymous")
+        if (feedbackInfo.employeeId == null) {
+            throw ForbiddenException("You can't give a response to anonymous")
+        }
 
-        if (feedbackInfo.employeeId == response.responderId) throw NoSuchMethodError("You can't give a response to yourself")
+        if (feedbackInfo.employeeId == response.responderId) {
+            throw ForbiddenException("You can't give a response to yourself")
+        }
     }
 }

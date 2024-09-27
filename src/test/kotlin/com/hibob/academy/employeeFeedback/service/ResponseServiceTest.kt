@@ -7,6 +7,7 @@ import org.mockito.kotlin.mock
 import kotlin.random.Random
 import com.hibob.academy.employeeFeedback.dao.*
 import jakarta.ws.rs.BadRequestException
+import jakarta.ws.rs.ForbiddenException
 import org.junit.jupiter.api.Assertions.assertEquals
 import java.time.LocalDate
 import org.mockito.kotlin.whenever
@@ -51,24 +52,24 @@ class ResponseServiceTest {
     }
 
     @Test
-    fun `addResponse should throw NoSuchMethodError when responding to anonymous feedback`() {
+    fun `addResponse should throw ForbiddenException when responding to anonymous feedback`() {
 
         val anonymousFeedback = feedbackData.copy(employeeId = null)
         whenever(feedbackDao.getFeedbackById(feedbackId, companyId)).thenReturn(anonymousFeedback)
 
-        val exception = assertThrows<NoSuchMethodError> {
+        val exception = assertThrows<ForbiddenException> {
             responseService.addResponse(validResponse)
         }
         assertEquals("You can't give a response to anonymous", exception.message)
     }
 
     @Test
-    fun `addResponse should throw NoSuchMethodError when responder tries to respond to own feedback`() {
+    fun `addResponse should throw ForbiddenException when responder tries to respond to own feedback`() {
 
         val ownFeedback = feedbackData.copy(employeeId = responderId)
         whenever(feedbackDao.getFeedbackById(feedbackId, companyId)).thenReturn(ownFeedback)
 
-        val exception = assertThrows<NoSuchMethodError> {
+        val exception = assertThrows<ForbiddenException> {
             responseService.addResponse(validResponse)
         }
         assertEquals("You can't give a response to yourself", exception.message)
