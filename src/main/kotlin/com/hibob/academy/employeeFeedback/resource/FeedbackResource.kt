@@ -85,7 +85,7 @@ class FeedbackResource(private val feedbackService: FeedbackService) {
     @GET
     @Path("/view")
     fun getFeedbackByFilter(filter: FeedbackFilter, @Context requestContext: ContainerRequestContext): Response {
-        //PermissionValidator.Permission.validFilter(filter)
+        PermissionValidator.Permission.validFilter(filter)
 
         val employeeInfo = PermissionValidator.Permission.getInfoFromCookie(requestContext)
         val hrOrAdmin = PermissionValidator.Permission.checkPermission(requestContext)
