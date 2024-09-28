@@ -21,12 +21,10 @@ class PermissionValidator {
             return activeEmployee.role == RoleType.HR || activeEmployee.role == RoleType.ADMIN
         }
 
-        fun getResponsePermission(response: List<ResponseDataOut>, request: ContainerRequestContext): Boolean {
-
-            val hrOrAdmin = checkPermission(request)
+        fun checkFeedbackWriter(response: List<ResponseDataOut>, request: ContainerRequestContext): Boolean {
             val info = getInfoFromCookie(request)
 
-            return response.firstOrNull()?.responderId == info.id || hrOrAdmin
+            return response.firstOrNull()?.responderId == info.id
         }
     }
 }

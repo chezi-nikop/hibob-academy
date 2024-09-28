@@ -20,26 +20,38 @@ import org.springframework.web.server.ResponseStatusException
 class ResponseResource(private val responseService: ResponseService) {
 
     @POST
-    fun addResponse(response: ResponseDataInfo, @Context requestContext: ContainerRequestContext) : Response {
+    fun addResponse(response: ResponseDataInfo, @Context requestContext: ContainerRequestContext): Response {
         val responderPermission = PermissionValidator.Permission.checkPermission(requestContext)
         if (!responderPermission) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to access this resource")
         }
 
         val responderInfo = PermissionValidator.Permission.getInfoFromCookie(requestContext)
-        val responseId = responseService.addResponse(ResponseDataIn(responderInfo.id, response.feedbackId, response.content, responderInfo.companyId))
+        val responseId = responseService.addResponse(
+            ResponseDataIn(
+                responderInfo.id,
+                response.feedbackId,
+                response.content,
+                responderInfo.companyId
+            )
+        )
 
         return Response.ok(responseId).build()
     }
 
     @GET
     @Path("/{feedbackId}")
-    fun getResponse(@PathParam("feedbackId") feedbackId: Long, @Context requestContext: ContainerRequestContext): Response {
+    fun getResponse(
+        @PathParam("feedbackId") feedbackId: Long,
+        @Context requestContext: ContainerRequestContext
+    ): Response {
         val employeeInfo = PermissionValidator.Permission.getInfoFromCookie(requestContext)
         val response = responseService.getResponse(feedbackId, employeeInfo.companyId)
 
-        val seeResponsePermission = PermissionValidator.Permission.getResponsePermission(response, requestContext)
-        if (!seeResponsePermission) {
+        val hrOrAdmin = PermissionValidator.Permission.checkPermission(requestContext)
+        val feedbackWriter = PermissionValidator.Permission.checkFeedbackWriter(response, requestContext)
+
+        if (!hrOrAdmin && !feedbackWriter) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to access this resource")
         }
         return Response.ok(response).build()
