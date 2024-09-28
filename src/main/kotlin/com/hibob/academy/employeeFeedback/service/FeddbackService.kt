@@ -2,7 +2,6 @@ package com.hibob.academy.employeeFeedback.service
 
 import com.hibob.academy.employeeFeedback.dao.*
 import jakarta.ws.rs.BadRequestException
-import jakarta.ws.rs.NotAuthorizedException
 import org.springframework.stereotype.Component
 
 @Component
@@ -28,10 +27,11 @@ class FeedbackService(private val feedbackDao: FeedbackDao) {
         return returnedStatus
     }
 
-    fun updateFeedbackStatus(updateFeedback: UpdateStatus, companyId: Long): Int {
+    fun updateFeedbackStatus(updateFeedback: UpdateStatus, companyId: Long): String {
         validatePositiveIds(updateFeedback.feedbackId)
         val updateStatus = feedbackDao.updateFeedbackStatus(updateFeedback, companyId)
-        return updateStatus
+        if (updateStatus > 0) return "feedback status updated successfully"
+        return "feedback status has not been updated"
     }
 
     fun getFeedbackByFilter(filter: FeedbackFilter, companyId: Long): List<FeedbackDataOut> {

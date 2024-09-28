@@ -62,13 +62,23 @@ class FeedbackServiceTest {
     }
 
     @Test
-    fun `updateFeedbackStatus should return update count when valid IDs are provided`() {
+    fun `updateFeedbackStatus should return success message when status is updated successfully`() {
         val updateFeedback = UpdateStatus(feedbackId = feedbackId, status = FeedbackStatus.REVIEWED)
         val expectedUpdateCount = 1
         whenever(feedbackDao.updateFeedbackStatus(updateFeedback, companyId)).thenReturn(expectedUpdateCount)
 
         val result = feedbackService.updateFeedbackStatus(updateFeedback, companyId)
-        assertEquals(expectedUpdateCount, result)
+        assertEquals("feedback status updated successfully", result)
+    }
+
+    @Test
+    fun `updateFeedbackStatus should return failure message when status update fails`() {
+        val updateFeedback = UpdateStatus(feedbackId = feedbackId, status = FeedbackStatus.REVIEWED)
+        val expectedUpdateCount = 0
+        whenever(feedbackDao.updateFeedbackStatus(updateFeedback, companyId)).thenReturn(expectedUpdateCount)
+
+        val result = feedbackService.updateFeedbackStatus(updateFeedback, companyId)
+        assertEquals("feedback status has not been updated", result)
     }
 
     @Test
