@@ -11,7 +11,9 @@ import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
+import org.springframework.web.server.ResponseStatusException
 
 @Controller
 @Path("/api/feedback")
@@ -52,7 +54,10 @@ class FeedbackResource(private val feedbackService: FeedbackService) {
 
     @GET
     @Path("/status/{id}")
-    fun getFeedbackStatus(@PathParam("id") feedbackId: Long, @Context requestContext: ContainerRequestContext ): Response {
+    fun getFeedbackStatus(
+        @PathParam("id") feedbackId: Long,
+        @Context requestContext: ContainerRequestContext
+    ): Response {
 
         val employeeInfo = PermissionValidator.Permission.getInfoFromCookie(requestContext)
 
@@ -64,16 +69,34 @@ class FeedbackResource(private val feedbackService: FeedbackService) {
     @PUT
     @Path("/update/status")
     fun updateFeedbackStatus(updateFeedback: UpdateStatus, @Context requestContext: ContainerRequestContext): Response {
-        //בדיקה האם הוא רשאי לעדכן
-        //עדכון
-        return Response.ok(updateFeedback.status).build()
+        val employeeInfo = PermissionValidator.Permission.getInfoFromCookie(requestContext)
+        val hrOrAdmin = PermissionValidator.Permission.checkPermission(requestContext)
+
+        if (!hrOrAdmin) throw ResponseStatusException(
+            HttpStatus.FORBIDDEN,
+            "You don't have permission to access this resource"
+        )
+
+        val updatedStatus = feedbackService.updateFeedbackStatus(updateFeedback, employeeInfo.companyId)
+
+        return Response.ok(updatedStatus).build()
     }
 
     @GET
     @Path("/view")
     fun getFeedbackByFilter(filter: FeedbackFilter, @Context requestContext: ContainerRequestContext): Response {
-        //בדיקה האם אני רשאי
-        //קריאה לקבל את הנתונים
-        return Response.ok().build()
+        //PermissionValidator.Permission.validFilter(filter)
+
+        val employeeInfo = PermissionValidator.Permission.getInfoFromCookie(requestContext)
+        val hrOrAdmin = PermissionValidator.Permission.checkPermission(requestContext)
+
+        if (!hrOrAdmin) throw ResponseStatusException(
+            HttpStatus.FORBIDDEN,
+            "You don't have permission to access this resource"
+        )
+
+        val feedbacks = feedbackService.getFeedbackByFilter(filter, employeeInfo.companyId)
+
+        return Response.ok(feedbacks).build()
     }
 }
