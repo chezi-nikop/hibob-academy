@@ -11,9 +11,7 @@ import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
-import org.springframework.web.server.ResponseStatusException
 
 @Controller
 @Path("/api/feedback")
@@ -72,8 +70,7 @@ class FeedbackResource(private val feedbackService: FeedbackService) {
         val employeeInfo = PermissionValidator.Permission.getInfoFromCookie(requestContext)
         val hrOrAdmin = PermissionValidator.Permission.checkPermission(requestContext)
 
-        if (!hrOrAdmin) throw ResponseStatusException(
-            HttpStatus.FORBIDDEN,
+        if (!hrOrAdmin) throw ForbiddenException(
             "You don't have permission to access this resource"
         )
 
@@ -85,13 +82,11 @@ class FeedbackResource(private val feedbackService: FeedbackService) {
     @GET
     @Path("/view")
     fun getFeedbackByFilter(filter: FeedbackFilter, @Context requestContext: ContainerRequestContext): Response {
-        PermissionValidator.Permission.validFilter(filter)
 
         val employeeInfo = PermissionValidator.Permission.getInfoFromCookie(requestContext)
         val hrOrAdmin = PermissionValidator.Permission.checkPermission(requestContext)
 
-        if (!hrOrAdmin) throw ResponseStatusException(
-            HttpStatus.FORBIDDEN,
+        if (!hrOrAdmin) throw ForbiddenException(
             "You don't have permission to access this resource"
         )
 
