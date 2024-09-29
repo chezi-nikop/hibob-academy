@@ -2,6 +2,8 @@ package com.hibob.academy.employeeFeedback.resource
 
 import com.hibob.academy.employeeFeedback.dao.FeedbackDataIn
 import com.hibob.academy.employeeFeedback.dao.FeedbackDataInfo
+import com.hibob.academy.employeeFeedback.dao.FeedbackFilter
+import com.hibob.academy.employeeFeedback.dao.UpdateStatus
 import com.hibob.academy.employeeFeedback.service.FeedbackService
 import com.hibob.academy.employeeFeedback.validation.PermissionValidator
 import jakarta.ws.rs.*
@@ -50,12 +52,46 @@ class FeedbackResource(private val feedbackService: FeedbackService) {
 
     @GET
     @Path("/status/{id}")
-    fun getFeedbackStatus(@PathParam("id") feedbackId: Long, @Context requestContext: ContainerRequestContext ): Response {
+    fun getFeedbackStatus(
+        @PathParam("id") feedbackId: Long,
+        @Context requestContext: ContainerRequestContext
+    ): Response {
 
         val employeeInfo = PermissionValidator.Permission.getInfoFromCookie(requestContext)
 
         val status = feedbackService.getFeedbackStatus(feedbackId, employeeInfo.id, employeeInfo.companyId)
 
         return Response.ok(status).build()
+    }
+
+    @PUT
+    @Path("/status")
+    fun updateFeedbackStatus(updateFeedback: UpdateStatus, @Context requestContext: ContainerRequestContext): Response {
+        val employeeInfo = PermissionValidator.Permission.getInfoFromCookie(requestContext)
+        val hrOrAdmin = PermissionValidator.Permission.checkPermission(requestContext)
+
+        if (!hrOrAdmin) throw ForbiddenException(
+            "You don't have permission to access this resource"
+        )
+
+        val updatedStatus = feedbackService.updateFeedbackStatus(updateFeedback, employeeInfo.companyId)
+
+        return Response.ok(updatedStatus).build()
+    }
+
+    @GET
+    @Path("/filter")
+    fun getFeedbackByFilter(filter: FeedbackFilter, @Context requestContext: ContainerRequestContext): Response {
+
+        val employeeInfo = PermissionValidator.Permission.getInfoFromCookie(requestContext)
+        val hrOrAdmin = PermissionValidator.Permission.checkPermission(requestContext)
+
+        if (!hrOrAdmin) throw ForbiddenException(
+            "You don't have permission to access this resource"
+        )
+
+        val feedbacks = feedbackService.getFeedbackByFilter(filter, employeeInfo.companyId)
+
+        return Response.ok(feedbacks).build()
     }
 }
