@@ -42,6 +42,18 @@ data class EmployeeDataForCookie(
     val companyId: Long,
 )
 
+data class UpdateStatus(
+    val status: FeedbackStatus,
+    val feedbackId: Long
+)
+
+data class FeedbackFilter(
+    val startDate: LocalDate? = null,
+    val endDate: LocalDate? = null,
+    val department: String? = null,
+    val isAnonymous: Boolean? = null,
+)
+
 enum class RoleType {
     ADMIN,
     MANAGER,

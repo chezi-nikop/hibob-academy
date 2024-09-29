@@ -1,14 +1,17 @@
 package com.hibob.academy.employeeFeedback.dao
 
 import jakarta.ws.rs.NotFoundException
+import org.jooq.Condition
 import org.jooq.RecordMapper
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 
 @Component
 class FeedbackDao(private val sql: DSLContext) {
     private val feedbackTable = FeedbackTable.instance
+    private val employeeTable = EmployeeTable.instance
 
     private val feedbackMapper = RecordMapper<Record, FeedbackDataOut>
     { record ->
@@ -49,6 +52,45 @@ class FeedbackDao(private val sql: DSLContext) {
             .and(feedbackTable.employeeId.eq(employeeId))
             .fetchOne(feedbackTable.status)
             ?: throw NotFoundException("feedbackId does not exist in the system")
+    }
+
+    fun updateFeedbackStatus(updateFeedback: UpdateStatus, companyId: Long): Int {
+        return sql.update(feedbackTable)
+            .set(feedbackTable.status, updateFeedback.status.name)
+            .where(feedbackTable.id.eq(updateFeedback.feedbackId))
+            .and(feedbackTable.companyId.eq(companyId))
+            .execute()
+    }
+
+    fun getFeedbackByFilter(filter: FeedbackFilter, companyId: Long): List<FeedbackDataOut> {
+        return sql.select()
+            .from(feedbackTable)
+            .leftJoin(employeeTable).on(feedbackTable.employeeId.eq(employeeTable.id))
+            .where(buildConditions(filter, companyId))
+            .fetch(feedbackMapper)
+    }
+
+    private fun buildConditions(filter: FeedbackFilter, companyId: Long): Condition {
+        return listOfNotNull(
+            feedbackTable.companyId.eq(companyId),
+            filter.department?.let { employeeTable.department.eq(it) },
+            buildDateCondition(filter.startDate, filter.endDate),  // סינון לפי טווח תאריכים
+            filter.isAnonymous?.let { anonymousCondition(it) }
+        ).reduce(Condition::and)
+    }
+
+    private fun buildDateCondition(startDate: LocalDate?, endDate: LocalDate?): Condition? {
+        return when {
+            startDate != null && endDate != null -> feedbackTable.date.between(startDate, endDate)
+            startDate != null -> feedbackTable.date.greaterOrEqual(startDate)
+            endDate != null -> feedbackTable.date.lessOrEqual(endDate)
+            else -> null
+        }
+    }
+
+    private fun anonymousCondition(isAnonymous: Boolean): Condition {
+        return if (isAnonymous) feedbackTable.employeeId.isNull
+        else feedbackTable.employeeId.isNotNull
     }
 
     fun deleteTable(companyId: Long) {
