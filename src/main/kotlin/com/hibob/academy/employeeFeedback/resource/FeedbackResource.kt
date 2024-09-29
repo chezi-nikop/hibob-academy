@@ -65,7 +65,7 @@ class FeedbackResource(private val feedbackService: FeedbackService) {
     }
 
     @PUT
-    @Path("/update/status")
+    @Path("/status")
     fun updateFeedbackStatus(updateFeedback: UpdateStatus, @Context requestContext: ContainerRequestContext): Response {
         val employeeInfo = PermissionValidator.Permission.getInfoFromCookie(requestContext)
         val hrOrAdmin = PermissionValidator.Permission.checkPermission(requestContext)
@@ -80,7 +80,7 @@ class FeedbackResource(private val feedbackService: FeedbackService) {
     }
 
     @GET
-    @Path("/view")
+    @Path("/filter")
     fun getFeedbackByFilter(filter: FeedbackFilter, @Context requestContext: ContainerRequestContext): Response {
 
         val employeeInfo = PermissionValidator.Permission.getInfoFromCookie(requestContext)
